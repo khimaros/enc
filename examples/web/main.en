@@ -1,0 +1,5 @@
+this javascript handles toggling light and dark mode
+
+CSS styles are in styles.css and this file will be imported by index.html
+
+there are also some small things floating around on the screen

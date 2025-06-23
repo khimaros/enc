@@ -1,0 +1,3 @@
+hello: output the string "hello, <input>!" based on the user's input
+
+main: call the hello function with the first argv. default to "world"

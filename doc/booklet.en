@@ -1,0 +1,19 @@
+this is a detailed markdown book for `enc`
+
+the first few sentences are akin to an elevator pitch and they do an excellent job summarizing the complex and technical project in a friendly and accessible way
+
+the booklet makes use of markdown formatting, including tables, where it lends to clarity
+
+any relevant content from README.md is summarized and clarified
+
+there is a quick start section
+
+there is an installation guide
+
+all of the make targets in Makefile are described in detail
+
+all command line flags are detailed
+
+all environment variables and config options are detailed
+
+the overall design of the program is also included

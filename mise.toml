@@ -1,0 +1,3 @@
+[tools]
+python = { version = "3.12.4", virtualenv = ".venv" }
+rust = "1.85.0"

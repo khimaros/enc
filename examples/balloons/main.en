@@ -1,0 +1,13 @@
+this is the main entrypoint for the program
+
+the program opens a window when started
+
+the window has colorful balloons floating up the screen randomly
+
+the balloons should have a realistic shape (rounded and oblong, as real balloons are)
+
+when the user clicks on the balloons they pop and confetti comes out
+
+the balloon asset is "balloon.png" which is generated from "balloon.svg"
+
+there should be a retro stock ticker continuously scrolling across the bottom

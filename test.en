@@ -1,0 +1,40 @@
+this is the description for a goldens test harness
+
+usage: test <update|test|help>
+
+to update/test, the "tests" make target should be built (make -B)
+
+on update, the result of the build including all shell history is saved to goldens
+
+output of the `make` command (lines beginning with `make: ` or `make[`) will be filtered out.
+
+the name of the golden output files should have "/" in target names replaced with "-"
+
+on test, the same results are computed and compared to the goldens
+
+goldens are stored in ./testdata/goldens/
+
+temporary output for comparison is stored in ./testdata/output/
+
+any directories needed to store the output are created before hand
+
+the test runner produces very detailed logging to stderr
+
+all integers and floating point numbers are discarded when comparing to goldens
+
+for example this diff results in a PASS:
+
+```diff
+ --- api cost summary ---
+ provider: google, model: gemini-2.5-pro
+-tokens: 467 input, 160 output, 1017 thinking
++tokens: 467 input, 161 output, 969 thinking
+ estimated cost:
+   - input   : $0.000584
+-  - output  : $0.001600
+-  - thinking: $0.010170
+-total: $0.012354
++  - output  : $0.001610
++  - thinking: $0.009690
++total: $0.011884
+```
