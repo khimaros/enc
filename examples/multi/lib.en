@@ -1,0 +1,7 @@
+this is the main library which exposes a few functions to main
+
+prompt: a function that reads a single number from the user using a graphical dialog
+
+add: a function that adds two numbers
+
+display: a function that creates a graphical dialog and displays any text provided

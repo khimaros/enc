@@ -1,0 +1,5 @@
+this is the main business logic, it primarly calls functions defined in lib
+
+it uses the prompt() function to read two numbers
+calls the add() with those numbers,
+and finally displays the result using the display() function

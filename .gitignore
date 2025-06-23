@@ -1,0 +1,7 @@
+.aider*
+__pycache__/
+.venv/
+log/
+target/
+/examples/hello
+/testdata/output/
