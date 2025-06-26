@@ -1,33 +1,83 @@
+cd ../examples/context/ && ../../enc --help
+Transpiles english to any programming language.
+
+Usage: enc [OPTIONS] [INPUT_FILE]
+
+Arguments:
+  [INPUT_FILE]  English language file to transpile (e.g. "hello.en")
+
+Options:
+  -o, --output-file <OUTPUT_FILE>
+          Output file path (e.g. "hello.rs")
+      --show-config
+          Show the consolidated configuration and exit
+      --provider <PROVIDER>
+          Language model API provider: "google", "anthropic", or "openai" [env: PROVIDER=] [default: google]
+      --model <MODEL>
+          Model to use for inference [env: MODEL=] [default: gemini-2.5-pro]
+      --gemini-api-key <GEMINI_API_KEY>
+          API key for Google Gemini [env: GEMINI_API_KEY=AIzaSyC35IHWgkygT3D3uadgj8xzR5uMWaM2-n4]
+      --openai-api-key <OPENAI_API_KEY>
+          API key for OpenAI [env: OPENAI_API_KEY=]
+      --openai-api-base <OPENAI_API_BASE>
+          Base URL for OpenAI-compatible API [env: OPENAI_API_BASE=]
+      --anthropic-api-key <ANTHROPIC_API_KEY>
+          API key for Anthropic Claude [env: ANTHROPIC_API_KEY=]
+      --max-tokens <MAX_TOKENS>
+          Maximum number of tokens for the LLM to generate [env: MAX_TOKENS=]
+      --thinking-budget <THINKING_BUDGET>
+          Maximum tokens for deep thought [env: THINKING_BUDGET=1024]
+      --seed <SEED>
+          Seed for deterministic output (empty means random) [env: SEED=]
+      --grounded-mode
+          Grounded mode adds the existing code (if present) to context files [env: GROUNDED_MODE=]
+      --hacking-conventions-path <HACKING_CONVENTIONS_PATH>
+          Path to coding conventions and style guide [env: HACKING_CONVENTIONS=] [default: ./HACKING.md]
+      --context-files [<CONTEXT_FILES>...]
+          Colon-separated list of additional file paths to include as context [env: CONTEXT_FILES=]
+      --logs-path <LOGS_PATH>
+          Path to store API logs [env: LOGS_PATH=] [default: ./log/]
+      --prompt-template-path <PROMPT_TEMPLATE_PATH>
+          Path to the code generation prompt template [env: PROMPT_TEMPLATE_PATH=] [default: ./res/prompt.tmpl]
+      --pricing-data-path <PRICING_DATA_PATH>
+          Path to the pricing data json file [env: PRICING_DATA_PATH=] [default: ./res/pricing.json]
+  -h, --help
+          Print help
+  -V, --version
+          Print version
 cd ../examples/context/ && ../../enc --show-config
 {
   "input_file": null,
-  "output_path": null,
+  "output_file": null,
+  "show_config": true,
   "provider": "google",
   "model": "gemini-2.5-pro",
+  "gemini_api_key": "[REDACTED]",
+  "openai_api_key": null,
+  "openai_api_base": null,
+  "anthropic_api_key": null,
   "max_tokens": null,
   "thinking_budget": 1024,
-  "grounded_mode": false,
   "seed": null,
-  "hacking_conventions": null,
+  "grounded_mode": false,
+  "hacking_conventions_path": "./HACKING.md",
   "context_files": [],
-  "openai_api_base": null,
   "logs_path": "./log/",
   "prompt_template_path": "./res/prompt.tmpl",
-  "pricing_data_path": "./res/pricing.json",
-  "show_config": true
+  "pricing_data_path": "./res/pricing.json"
 }
 cd ../examples/context/ && ../../enc main.en -o main.py --context-files context.txt
-debug log path: ./log/20250626_095545.log
+debug log path: ./log/20250626_110749.log
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
 provider: google, model: gemini-2.5-pro
-tokens: 308 input, 91 output, 615 thinking
+tokens: 308 input, 198 output, 1287 thinking
 estimated cost:
   - input   : $0.000385
-  - output  : $0.000910
-  - thinking: $0.006150
-total: $0.007445
+  - output  : $0.001980
+  - thinking: $0.012870
+total: $0.015235
 cd ../examples/context/ && python main.py
 the answer to the meaning of life, the universe and everything

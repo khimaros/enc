@@ -3,6 +3,7 @@
 ```
 [@] solution for build boilerplate (Cargo.toml, requirements.txt, etc)
 
+[ ] add a test for grounded mode
 [ ] build ./res/ resources into the rust binary
 [ ] move language map out into separate data file
 [ ] ensure deterministic output with the same input file

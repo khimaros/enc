@@ -26,6 +26,10 @@ transpile: transpile-python transpile-rust test.sh
 transpile-rust: src/main.rs
 .PHONY: transpile-rust
 
+transpile-rust-grounded: src/enc.en $(BOOTSTRAP_DEPS)
+	./enc  "$<" -o "src/main.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml --grounded-mode true
+.PHONY: transpile-rust
+
 transpile-python: src/enc.py
 .PHONY: transpile-python
 

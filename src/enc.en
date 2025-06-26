@@ -95,7 +95,13 @@ if the HACKING_CONVENTIONS source file is not present, that section can be skipp
 
 ## resources
 
-enc searches for resource files (such as ./res/pricing.json and ./res/prompt.tmpl) relative to the current working directory. if it can't find them there, it will search relative to `${XDG_DATA_HOME}/enc/`. for example, `./res/prompt.json` then `${XDG_DATA_HOME}/enc/res/prompt.json`
+all referenced files under `./res/` (such as `./res/pricing.json` and `./res/prompt.tmpl`) are considered resource files.
+
+enc searches for resource files in a specific order:
+
+1. relative to the current working directory
+2. relative to `${XDG_DATA_HOME}/enc/`. for example, `./res/prompt.json` then `${XDG_DATA_HOME}/enc/res/prompt.json`
+3. (for compiled languages like rust) all resource files will also be compiled into the binary using macros and read from memory. this will be the final fallback source.
 
 ## determinism
 
