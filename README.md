@@ -51,11 +51,11 @@ fn main() {
 prebuilt rust [releases](https://github.com/khimaros/enc/releases) are available for linux-x64
 
 ```console
-$ wget -O enc https://github.com/khimaros/enc/releases/download/v0.1.0/enc-linux-x64
+$ wget -O enc https://github.com/khimaros/enc/releases/download/v0.2.0/enc-linux-x64
 
 $ chmod +x enc
 
-$ wget -O .enc.env https://github.com/khimaros/enc/releases/download/v0.1.0/x.enc.env.example
+$ wget -O .enc.env https://github.com/khimaros/enc/releases/download/v0.2.0/x.enc.env.example
 
 $ editor .enc.env   # add your API keys
 
@@ -100,6 +100,10 @@ $ editor ~/.enc.env  # add your keys
 ```
 
 you can also copy to the working directory instead of `${HOME}`
+
+`enc` can also be used with any OpenAI compatible endpoint, including openrouter and `llama.cpp`
+
+to use these, set `OPENAI_BASE_URL` to your preferred endpoint
 
 ## installation
 

@@ -8,11 +8,11 @@ enc is a program that can be used to transpile any english language file (eg. "h
 $ enc ./examples/hello.en -o ./examples/hello.rs
 
 debug log path: ./log/20250624_173200.log
+provider: google, model: gemini-2.5-pro
 transpiling './examples/hello.en' to './examples/hello.rs' (rust)
 successfully transpiled './examples/hello.rs'
 
 --- api cost summary ---
-provider: google, model: gemini-2.5-pro
 tokens: 422 input, 139 output, 1095 thinking
 estimated cost:
   - input   : $0.000590
@@ -27,11 +27,11 @@ enc can make use of any OpenAI compatible API backend. supported models include:
 
 enc can make use of the Google Generative AI API backend. supported models include: gemini-2.5-pro, gemini-2.5-pro-preview-06-05, gemini-2.5-flash.
 
-enc can make use of Anthropic Claude API backend. supported models include: claude-3-7-sonnet-20250219.
+enc can make use of Anthropic Claude API backend. supported models include: claude-sonnet-4-20250514, claude-3-7-sonnet-20250219.
 
 enc DOESN'T support any form of tool calling.
 
-enc uses explicit timeouts for all API calls (default 900 seconds).
+enc uses explicit timeouts (TIMEOUT from settings) for all API calls.
 
 the API key of the SELECTED provider is the ONLY one that is required at runtime.
 
@@ -51,7 +51,9 @@ the "consolidated configuration" is what results from processing all layered con
 
 EVERY configuration setting is also available as command line flag.
 
-when the `--show-config` flag is provided, enc dumps the redacted config and then exits immediately. all other flags and settings are OPTIONAL in this case.
+when the `--show-config` flag is provided, enc FIRST loads all sources of configuration (to produce the consolidated + redacted config) and then writes them to the console.
+
+NO OTHER flags need to be supplied when --show-config is used. the program exits immediately after the configuration has been written to the console.
 
 ## logging
 
@@ -69,11 +71,13 @@ the template expanded prompt is logged.
 
 text content returned by the LLM is logged.
 
+errors always include the file and line number, at least when built or run in debug mode.
+
 ## prompt template
 
 there ISN'T any prompt template embedded in the code for enc.
 
-the prompt template is loaded from the file specified by the PROMPT_TEMPLATE_PATH setting.
+the prompt template is loaded from resource `./res/prompt.tmpl`.
 
 template variables are written between double curly braces as in `{{some_variable}}`.
 
@@ -91,17 +95,22 @@ template expansion is done ONCE as a SINGLE PASS to ensure that template formatt
 
 if the target format is a derivative of XML (eg. SVG), enc will strip double-hyphens (`--`) from `generation_command` before expanding that variable in the prompt.
 
-if the HACKING_CONVENTIONS source file is not present, that section can be skipped.
+if the HACKING_CONVENTIONS source file is not present, that section can be skipped and the program will continue without error.
 
 ## resources
 
-all referenced files under `./res/` (such as `./res/pricing.json` and `./res/prompt.tmpl`) are considered resource files.
+enc searches for resource files (any file under `./res/`) in a specific order:
 
-enc searches for resource files in a specific order:
+1. each path (colon separated) provided in the `RESOURCES_PATH` setting. `${XDG_DATA_HOME}` will be expanded to the env variable contents.
+2. (for compiled languages like rust) all resource files will also be compiled into the binary using macros and read from memory. this will be the final fallback source.
 
-1. relative to the current working directory
-2. relative to `${XDG_DATA_HOME}/enc/`. for example, `./res/prompt.json` then `${XDG_DATA_HOME}/enc/res/prompt.json`
-3. (for compiled languages like rust) all resource files will also be compiled into the binary using macros and read from memory. this will be the final fallback source.
+this applies to all files from CONTEXT FILES under ./res/ including:
+
+- ./res/languages.json
+- ./res/pricing.json
+- ./res/prompt.tmpl
+
+NONE of these resources have defaults hardcoded in the resulting code.
 
 ## determinism
 
@@ -109,7 +118,9 @@ the user can provide a seed to request deterministic outputs. if no seed is prov
 
 ## provider workarounds
 
-with the "google" provider, the seed parameter ISN'T supported. instead, temperature is set to 0.
+with the "google" and "anthropic" providers, the seed parameter ISN'T supported. instead, temperature is set to 0.
+
+the temperature workaround is only used if seed is EXPLICITLY provided by the user in settings or flags. for providers which support seeds, the seed can be generated randomly at invocation time.
 
 ## library workarounds
 
@@ -121,17 +132,25 @@ when using a flag parsing library, all short flags are explicitly definied to av
 
 ## token budgets
 
-token limits are enforced for all models. thinking budgets are enforced for all LLMs which support extended thinking or reasoning.
+token limits are enforced for all models.
 
-pricing data for language model API calls is shown after the call completes based on the pricing data in `./res/pricing.json`. costs accounted by input, output, and thinking costs.
+if `max_tokens` is not present in the pricing data, a default of 8192 will be assumed.
+
+the `MAX_TOKENS` setting (if explicitly set) can be used to override the per-model `max_tokens` (combined output and thinking tokens) from `./res/pricing.json`.
+
+thinking budgets are sent to providers for all models which support thinking budgets.
+
+pricing data for language model API calls is shown after the call completes, based on the pricing data in `./res/pricing.json`. costs accounted by input, output, and thinking costs.
 
 if cost per thinking token is not known, they are priced as output tokens.
 
-some providers don't supply thinking token counts. in that case, they will be calculated by subtracting the known input/output token usage from the total token usage to calculate the thinking tokens.
+some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated by subtracting the known input/output token usage from the total token usage.
 
 ## code generation
 
 the target language is automatically determined based on the file extension of the output file.
+
+there is a language map of the form `{"rs": "rust"}` in `./res/languages.json`.
 
 if the target language is not recognized by the file extension, the file extension or the file base name are passed to the LLM at inference time.
 
@@ -140,3 +159,7 @@ if the language model returns markdown fencing around the code, it will be remov
 ## language model prices
 
 model pricing data will be loaded from `./res/pricing.json` in CONTEXT FILES.
+
+## security
+
+API keys and absolute paths are ALWAYS omitted or redacted from output to the console, to the LLM, or to logs. this requirement covers `--help` and `--show-config` output.
