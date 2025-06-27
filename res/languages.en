@@ -1,5 +1,9 @@
-all possible mappings between file extension/name and destination filetype
+this data file contains all possible mappings between file extension and the plain english name for that filetype.
 
-the data structure should be a simple dictionary with key being the file extension or file name and the value being the plain language name of that filetype.
+for files which don't have an extension (eg. Makefile) the full name is used in place of the extension.
 
-the ".en" file extension will be known as "english"
+the data structure includes non-programming language file types such as CSV and SVG, really any text based format can be found here.
+
+the data structure is an object with key being the file extension or file name and the value being the plain language name of that filetype. for example `{".rs": "rust", ".py": "python"}`
+
+the ".en" file extension is mapped as "english"

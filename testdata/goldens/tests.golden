@@ -1,47 +1,17 @@
-cd ../examples/context/ && ../../enc --help
-Usage: enc [OPTIONS] [INPUT_FILE]
+../../enc "main.en" -o "main.py" --context-files context.txt
+debug log path: ./log/20250627_085000.log
+provider: google, model: gemini-2.5-pro
+transpiling 'main.en' to 'main.py' (python)
+successfully transpiled 'main.py'
 
-Arguments:
-  [INPUT_FILE]  path to the english language file to transpile
-
-Options:
-  -o, --output-file <OUTPUT_FILE>
-          path to the output file
-      --provider <PROVIDER>
-          language model API provider: "google", "anthropic", or "openai" [env: PROVIDER=]
-      --model <MODEL>
-          model to use for inference [env: MODEL=]
-      --max-tokens <MAX_TOKENS>
-          maximum number of tokens for the LLM to generate [env: MAX_TOKENS=]
-      --thinking-budget <THINKING_BUDGET>
-          maximum tokens for deep thought [env: THINKING_BUDGET=1024]
-      --seed <SEED>
-          seed used for inference (empty means random) [env: SEED=]
-      --hacking-conventions <HACKING_CONVENTIONS>
-          coding conventions and style guide [env: HACKING_CONVENTIONS=] [default: ./HACKING.md]
-      --timeout <TIMEOUT>
-          timeout for API requests in seconds [env: TIMEOUT=]
-      --context-files <CONTEXT_FILES>
-          additional file paths to include as context (colon separated) [env: CONTEXT_FILES=]
-      --gemini-api-key <GEMINI_API_KEY>
-          google gemini API key
-      --anthropic-api-key <ANTHROPIC_API_KEY>
-          anthropic API key
-      --openai-api-key <OPENAI_API_KEY>
-          openAI API key
-      --openai-api-base <OPENAI_API_BASE>
-          openAI compatible API base url [env: OPENAI_API_BASE=http://localhost:7860/v1]
-      --logs-path <LOGS_PATH>
-          path to store API logs [env: LOGS_PATH=]
-      --resources-path <RESOURCES_PATH>
-          path to resources (pricing, language map, templates) [env: RESOURCES_PATH=]
-      --show-config
-          show the consolidated configuration and exit
-  -h, --help
-          Print help
-  -V, --version
-          Print version
-cd ../examples/context/ && ../../enc --show-config
+--- api cost summary ---
+tokens: 355 input, 121 output, 1775 thinking
+estimated cost:
+  - input   : $0.000444
+  - output  : $0.001210
+  - thinking: $0.017750
+total: $0.019404
+../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
   "context_files": [],
@@ -59,23 +29,49 @@ cd ../examples/context/ && ../../enc --show-config
     "./res/",
     "${XDG_DATA_HOME}/enc/res/"
   ],
-  "seed": 15849869058455360884,
+  "seed": 1549206993081031078,
   "thinking_budget": 1024,
   "timeout": 1800,
   "user_provided_seed": false
 }
-cd ../examples/context/ && ../../enc main.en -o main.py --context-files context.txt
-debug log path: ./log/20250626_202548.log
-provider: google, model: gemini-2.5-pro
+python main.py
+the answer to the meaning of life, the universe and everything
+../../enc "main.en" -o "main.py" --context-files context.txt
+debug log path: ./log/20250627_085022.log
+provider: anthropic, model: claude-3-7-sonnet-20250219
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 308 input, 147 output, 1930 thinking
+tokens: 378 input, 150 output, 0 thinking
 estimated cost:
-  - input   : $0.000385
-  - output  : $0.001470
-  - thinking: $0.019300
-total: $0.021155
-cd ../examples/context/ && python main.py
+  - input   : $0.001134
+  - output  : $0.002250
+  - thinking: $0.000000
+total: $0.003384
+../../enc --show-config
+{
+  "anthropic_api_key": "[REDACTED]",
+  "context_files": [],
+  "gemini_api_key": "[REDACTED]",
+  "hacking_conventions": "./HACKING.md",
+  "input_file": "",
+  "logs_path": "./log/",
+  "max_tokens": null,
+  "model": "claude-3-7-sonnet-20250219",
+  "openai_api_base": "http://localhost:7860/v1",
+  "openai_api_key": "[REDACTED]",
+  "output_file": "",
+  "provider": "anthropic",
+  "resources_path": [
+    "./res/",
+    "${XDG_DATA_HOME}/enc/res/"
+  ],
+  "seed": 3840299158651793221,
+  "thinking_budget": 1024,
+  "timeout": 1800,
+  "user_provided_seed": false
+}
+python main.py
 the answer to the meaning of life, the universe and everything
+

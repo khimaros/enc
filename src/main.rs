@@ -539,10 +539,12 @@ async fn call_google_api(
         serde_json::to_string_pretty(&response_body)?
     )?;
 
-    let full_text = response_body["candidates"][0]["content"]["parts"][0]["text"]
-        .as_str()
-        .unwrap_or_default()
-        .to_string();
+    let full_text = response_body["candidates"][0]["content"]["parts"]
+        .as_array()
+        .unwrap_or(&vec![])
+        .iter()
+        .filter_map(|part| part["text"].as_str())
+        .collect::<String>();
 
     let mut usage = ApiUsage::default();
     if let Some(usage_meta) = response_body.get("usageMetadata") {
@@ -615,10 +617,12 @@ async fn call_anthropic_api(
         serde_json::to_string_pretty(&response_body)?
     )?;
 
-    let full_text = response_body["content"][0]["text"]
-        .as_str()
-        .unwrap_or_default()
-        .to_string();
+    let full_text = response_body["content"]
+        .as_array()
+        .unwrap_or(&vec![])
+        .iter()
+        .filter_map(|block| block["text"].as_str())
+        .collect::<String>();
 
     let usage = ApiUsage {
         input_tokens: response_body["usage"]["input_tokens"]

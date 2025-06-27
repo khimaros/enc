@@ -1,6 +1,6 @@
-BOOTSTRAP_FLAGS := --context-files ./.enc.env.example:./res/pricing.json:./res/languages.json
+BOOTSTRAP_FLAGS := --context-files ./.enc.env.example
 
-BOOTSTRAP_DEPS := ./.enc.env.example ./res/pricing.json
+BOOTSTRAP_DEPS := ./.enc.env.example ./res/pricing.json ./res/languages.json
 
 default: build-release
 .PHONY: default
@@ -17,6 +17,7 @@ install-resources:
 	install -d ./res/ ${XDG_DATA_HOME}/enc/res/
 	install ./res/prompt.tmpl ${XDG_DATA_HOME}/enc/res/prompt.tmpl
 	install ./res/pricing.json ${XDG_DATA_HOME}/enc/res/pricing.json
+	install ./res/languages.json ${XDG_DATA_HOME}/enc/res/languages.json
 .PHONY: install-resources
 
 res/languages.json: res/languages.en
@@ -84,20 +85,12 @@ touch:
 	touch src/enc.en doc/booklet.en doc/icon.en test.en
 	touch examples/hello.en
 	touch examples/multi/lib.en examples/multi/main.en
-	touch examples/context/main.en
 	touch examples/balloons/main.en examples/balloons/assets/balloon.en
 	touch examples/web/index.en examples/web/styles.en examples/web/main.en
 .PHONY: touch
 
-precommit: format test
+precommit: test-goldens
 .PHONY: precommit
-
-test: test-goldens
-.PHONY: test
-
-tests:
-	@make -C tests
-.PHONY: tests
 
 test-goldens: test.sh
 	./test.sh test
@@ -106,6 +99,18 @@ test-goldens: test.sh
 update-goldens: test.sh
 	./test.sh update
 .PHONY: update-goldens
+
+tests:
+	@make -C tests
+.PHONY: tests
+
+tests-python:
+	@make -C tests ENC_EDITION=enc-python
+.PHONY: tests-python
+
+tests-release:
+	@make -C tests ENC_EDITION=enc-release
+.PHONY: tests-release
 
 test.sh: test.en
 	./enc-release "$<" -o "$@" --context-files Makefile
@@ -153,7 +158,6 @@ hello-rust: examples/hello.en
 
 examples: examples/hello
 	make -C examples/balloons
-	make -C examples/context
 	make -C examples/multi
 	make -C examples/parasite
 	make -C examples/web
@@ -170,10 +174,6 @@ examples/hello.rs: examples/hello.en
 examples/hello.c: examples/hello.en
 	./enc "$<" -o "$@"
 
-examples/context:
-	@make -C "$@"
-.PHONY:
-
 res/pricing.json:
 	./scripts/pricing.py
 
@@ -181,7 +181,7 @@ scripts: scripts/pricing.py
 .PHONY: scripts
 
 scripts/pricing.py: scripts/pricing.en
-	./enc-release "$<" -o "$@" --context-files ./res/pricing.json
+	./enc-release "$<" -o "$@" --context-files ./res/pricing.json:requirements.txt
 
 docs: doc/icon.png doc/booklet.md doc/enc.cast.gif
 .PHONY: docs
@@ -192,8 +192,8 @@ doc/icon.png: doc/icon.svg
 doc/icon.svg: doc/icon.en
 	./enc "$<" -o "$@" --context-files README.md:src/enc.en
 
-doc/booklet.md: doc/booklet.en .enc.env.example Makefile README.md src/enc.en examples/multi/README.md examples/parasite/README.md examples/balloons/README.md examples/web/README.md examples/context/README.md
-	./enc-release "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md:examples/context/README.md
+doc/booklet.md: doc/booklet.en .enc.env.example Makefile README.md src/enc.en examples/multi/README.md examples/parasite/README.md examples/balloons/README.md examples/web/README.md
+	./enc-release "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md
 
 doc/CAST.md:
 	echo "# CAST" > "$@"

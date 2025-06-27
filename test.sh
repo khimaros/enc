@@ -4,8 +4,8 @@
 set -e
 set -o pipefail
 
-# to update/test, the hello target and examples/context targets should be built (make -B)
-TARGETS=("hello" "tests")
+# to update/test, the "tests" make target should be built (make -B)
+TARGETS=("tests")
 # goldens are stored in ./testdata/goldens/
 GOLDEN_DIR="./testdata/goldens"
 # temporary output for comparison is stored in ./testdata/output/

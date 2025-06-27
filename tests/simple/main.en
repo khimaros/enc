@@ -1,1 +1,3 @@
 this program simply prints the contents of the ./context.txt file
+
+the contents should be directly embedded in the source code

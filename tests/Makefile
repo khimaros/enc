@@ -1,20 +1,22 @@
+default: test test-anthropic
+.PHONY: default
+
 test:
-	cd ../examples/context/ && ../../enc --help
-	cd ../examples/context/ && ../../enc --show-config
-	cd ../examples/context/ && ../../enc main.en -o main.py --context-files context.txt
-	cd ../examples/context/ && python main.py
+	@make -B -C simple
 .PHONY: test
 
+test-anthropic:
+	@make -B -C simple PROVIDER=anthropic MODEL=claude-3-7-sonnet-20250219
+.PHONY: test-anthropic
+
+test-release:
+	@make -B -C simple ENC_EDITION=enc-release
+.PHONY: test-release
+
 test-rust:
-	cd ../examples/context/ && ../../enc-rust --help
-	cd ../examples/context/ && ../../enc-rust --show-config
-	cd ../examples/context/ && ../../enc-rust main.en -o main.py --context-files context.txt
-	cd ../examples/context/ && python main.py
+	@make -B -C simple ENC_EDITION=enc-rust
 .PHONY: test-rust
 
 test-python:
-	cd ../examples/context/ && ../../enc-python --help
-	cd ../examples/context/ && ../../enc-python --show-config
-	cd ../examples/context/ && ../../enc-python main.en -o main.py --context-files context.txt
-	cd ../examples/context/ && python main.py
+	@make -B -C simple ENC_EDITION=enc-python
 .PHONY: test-python

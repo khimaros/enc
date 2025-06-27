@@ -23,11 +23,11 @@ total: $0.013320
 
 ## providers
 
-enc can make use of any OpenAI compatible API backend. supported models include: gpt-4o-mini, gpt-4.5-preview
+enc can make use of any OpenAI compatible API backend via the `/chat/completions` endpoint. supported models include: gpt-4o-mini, gpt-4.5-preview
 
-enc can make use of the Google Generative AI API backend. supported models include: gemini-2.5-pro, gemini-2.5-pro-preview-06-05, gemini-2.5-flash.
+enc can make use of the Google Generative AI API backend via the `v1beta/models/{model}:generateContent` endpoint. supported models include: gemini-2.5-pro, gemini-2.5-pro-preview-06-05, gemini-2.5-flash.
 
-enc can make use of Anthropic Claude API backend. supported models include: claude-sonnet-4-20250514, claude-3-7-sonnet-20250219.
+enc can make use of the Anthropic Claude API backend via the `/v1/messages` endpoint. API calls include the header `anthropic-version: 2023-06-01`. supported models include: claude-sonnet-4-20250514, claude-3-7-sonnet-20250219.
 
 enc DOESN'T support any form of tool calling.
 
@@ -37,23 +37,26 @@ the API key of the SELECTED provider is the ONLY one that is required at runtime
 
 ## configuration
 
-the default value for all settings are commented out in `./.enc.env.example`.
-
 enc uses a layered configuration. settings are loaded in the following order:
 
-1. home config: ~/.enc.env
+1. command line flags
 2. working dir config: ./.enc.env
-3. command line flags
+3. home config: ~/.enc.env
+4. hardcoded fallbacks in the application based on those in ./.enc.env.example
 
-subsequent configuration sources override earlier ones.
+enc uses the first value it finds for environment variables; the working directory config (`./.enc.env`) overrides the home config (`~/.enc.env`), and command line flags override all environment configurations.
 
 the "consolidated configuration" is what results from processing all layered configuration sources. the "redacted configuration" is what results from filtering the consolidated configuration.
 
 EVERY configuration setting is also available as command line flag.
 
-when the `--show-config` flag is provided, enc FIRST loads all sources of configuration (to produce the consolidated + redacted config) and then writes them to the console.
+when the `--show-config` flag is provided, enc FIRST loads all sources of configuration and then writes the redacted config to the console. the program exits immediately after the configuration has been written.
 
-NO OTHER flags need to be supplied when --show-config is used. the program exits immediately after the configuration has been written to the console.
+## library workarounds
+
+when using a dotenv library, all env file paths are explicitly defined to ensure the correct load order.
+
+when using a flag parsing library, all short flags are explicitly defined. input and output file arguments are declared as required unless the `--show-config` flag is present.
 
 ## logging
 
@@ -75,8 +78,6 @@ errors always include the file and line number, at least when built or run in de
 
 ## prompt template
 
-there ISN'T any prompt template embedded in the code for enc.
-
 the prompt template is loaded from resource `./res/prompt.tmpl`.
 
 template variables are written between double curly braces as in `{{some_variable}}`.
@@ -95,22 +96,20 @@ template expansion is done ONCE as a SINGLE PASS to ensure that template formatt
 
 if the target format is a derivative of XML (eg. SVG), enc will strip double-hyphens (`--`) from `generation_command` before expanding that variable in the prompt.
 
-if the HACKING_CONVENTIONS source file is not present, that section can be skipped and the program will continue without error.
+if the HACKING_CONVENTIONS source file is not present, that section of the prompt will be empty, and the program will continue without error.
 
 ## resources
 
 enc searches for resource files (any file under `./res/`) in a specific order:
 
-1. each path (colon separated) provided in the `RESOURCES_PATH` setting. `${XDG_DATA_HOME}` will be expanded to the env variable contents.
-2. (for compiled languages like rust) all resource files will also be compiled into the binary using macros and read from memory. this will be the final fallback source.
+1. each path (colon separated) provided in the `RESOURCES_PATH` setting. `${XDG_DATA_HOME}` will be expanded to the env variable contents. if it is not set, it will fall back to `$HOME/.local/share`.
+2. as a final fallback, resource files are embedded directly into the compiled binary and read from memory.
 
 this applies to all files from CONTEXT FILES under ./res/ including:
 
 - ./res/languages.json
 - ./res/pricing.json
 - ./res/prompt.tmpl
-
-NONE of these resources have defaults hardcoded in the resulting code.
 
 ## determinism
 
@@ -122,23 +121,15 @@ with the "google" and "anthropic" providers, the seed parameter ISN'T supported.
 
 the temperature workaround is only used if seed is EXPLICITLY provided by the user in settings or flags. for providers which support seeds, the seed can be generated randomly at invocation time.
 
-## library workarounds
-
-the available libraries are specified in language specific project config in CONTEXT FILES.
-
-when using an external dotenv library, all env file paths are explicitly defined to ensure the correct path is used.
-
-when using a flag parsing library, all short flags are explicitly definied to avoid conflicts with automatic naming. also, all flags are defined as optional and enforced procedurally at the point where the configuration values are consumed.
-
 ## token budgets
 
 token limits are enforced for all models.
 
 if `max_tokens` is not present in the pricing data, a default of 8192 will be assumed.
 
-the `MAX_TOKENS` setting (if explicitly set) can be used to override the per-model `max_tokens` (combined output and thinking tokens) from `./res/pricing.json`.
+the `MAX_TOKENS` setting (if explicitly set) can be used to override the per-model `max_tokens` from `./res/pricing.json`. the `MAX_TOKENS` setting is NOT sent to the Google provider API.
 
-thinking budgets are sent to providers for all models which support thinking budgets.
+the `THINKING_BUDGET` is a configured value that is not currently passed to any provider.
 
 pricing data for language model API calls is shown after the call completes, based on the pricing data in `./res/pricing.json`. costs accounted by input, output, and thinking costs.
 
