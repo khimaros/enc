@@ -1,16 +1,16 @@
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20250627_085000.log
-provider: google, model: gemini-2.5-pro
+debug log path: ./log/20250627_113739.log
+provider: google, model: gemini-2.5-flash
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 355 input, 121 output, 1775 thinking
+tokens: 347 input, 139 output, 1073 thinking
 estimated cost:
-  - input   : $0.000444
-  - output  : $0.001210
-  - thinking: $0.017750
-total: $0.019404
+  - input   : $0.000121
+  - output  : $0.000348
+  - thinking: $0.002683
+total: $0.003151
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
@@ -20,7 +20,7 @@ total: $0.019404
   "input_file": "",
   "logs_path": "./log/",
   "max_tokens": null,
-  "model": "gemini-2.5-pro",
+  "model": "gemini-2.5-flash",
   "openai_api_base": "http://localhost:7860/v1",
   "openai_api_key": "[REDACTED]",
   "output_file": "",
@@ -29,7 +29,7 @@ total: $0.019404
     "./res/",
     "${XDG_DATA_HOME}/enc/res/"
   ],
-  "seed": 1549206993081031078,
+  "seed": 4477450301430374076,
   "thinking_budget": 1024,
   "timeout": 1800,
   "user_provided_seed": false
@@ -37,18 +37,18 @@ total: $0.019404
 python main.py
 the answer to the meaning of life, the universe and everything
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20250627_085022.log
+debug log path: ./log/20250627_113745.log
 provider: anthropic, model: claude-3-7-sonnet-20250219
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 378 input, 150 output, 0 thinking
+tokens: 370 input, 164 output, 0 thinking
 estimated cost:
-  - input   : $0.001134
-  - output  : $0.002250
+  - input   : $0.001110
+  - output  : $0.002460
   - thinking: $0.000000
-total: $0.003384
+total: $0.003570
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
@@ -67,7 +67,7 @@ total: $0.003384
     "./res/",
     "${XDG_DATA_HOME}/enc/res/"
   ],
-  "seed": 3840299158651793221,
+  "seed": 3315979396289660611,
   "thinking_budget": 1024,
   "timeout": 1800,
   "user_provided_seed": false
