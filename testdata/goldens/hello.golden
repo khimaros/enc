@@ -1,16 +1,16 @@
 ./enc "examples/hello.en" -o "examples/hello.c"
-debug log path: ./log/20250626_110732.log
+debug log path: ./log/20250626_202534.log
+provider: google, model: gemini-2.5-pro
 transpiling 'examples/hello.en' to 'examples/hello.c' (c)
 successfully transpiled 'examples/hello.c'
 
 --- api cost summary ---
-provider: google, model: gemini-2.5-pro
-tokens: 491 input, 148 output, 1178 thinking
+tokens: 406 input, 157 output, 1164 thinking
 estimated cost:
-  - input   : $0.000614
-  - output  : $0.001480
-  - thinking: $0.011780
-total: $0.013874
+  - input   : $0.000508
+  - output  : $0.001570
+  - thinking: $0.011640
+total: $0.013718
 cc "examples/hello.c" -o examples/hello
 ./examples/hello fnord
 hello, fnord!

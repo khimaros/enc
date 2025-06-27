@@ -101,6 +101,10 @@ $ editor ~/.enc.env  # add your keys
 
 you can also copy to the working directory instead of `${HOME}`
 
+`enc` can also be used with any OpenAI compatible endpoint, including openrouter and `llama.cpp`
+
+to use these, set `OPENAI_BASE_URL` to your preferred endpoint
+
 ## installation
 
 installation is per-user not system wide

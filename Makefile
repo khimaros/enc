@@ -1,9 +1,9 @@
-BOOTSTRAP_FLAGS := --context-files ./.enc.env.example:./res/pricing.json
+BOOTSTRAP_FLAGS := --context-files ./.enc.env.example:./res/pricing.json:./res/languages.json
 
 BOOTSTRAP_DEPS := ./.enc.env.example ./res/pricing.json
 
-all: build
-.PHONY: all
+default: build-release
+.PHONY: default
 
 install: build
 	install ./target/debug/enc ${HOME}/.local/bin/enc
@@ -19,34 +19,49 @@ install-resources:
 	install ./res/pricing.json ${XDG_DATA_HOME}/enc/res/pricing.json
 .PHONY: install-resources
 
+res/languages.json: res/languages.en
+	./enc-release "$<" -o "$@"
+
 uninstall:
 	rm -fv "${HOME}/.local/bin/enc"
 	rm -rfv "${XDG_DATA_HOME}/enc/"
 .PHONY: uninstall
 
-release: transpile-rust
+release: build-release
+.PHONY: release
+
+build-release: build-release-rust
+.PHONY: build-release
+
+build-release-rust: transpile-rust
 	cargo build --release
 	cd target/release/ && ln -sf enc enc-linux-x64
-.PHONY: release
+.PHONY: build-release-rust
+
+create: create-rust
+.PHONY: create
+
+create-rust: transpile-rust build-rust
+.PHONY: create-rust
 
 build: build-rust
 .PHONY: build
 
-transpile: transpile-python transpile-rust test.sh
+transpile: transpile-python transpile-rust test.sh scripts/pricing.py
 .PHONY: transpile
 
 transpile-rust: src/main.rs
 .PHONY: transpile-rust
 
 transpile-rust-grounded: src/enc.en $(BOOTSTRAP_DEPS)
-	./enc  "$<" -o "src/main.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml --grounded-mode true
-.PHONY: transpile-rust
+	./enc-release  "$<" -o "src/main.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml:./src/main.rs
+.PHONY: transpile-rust-grounded
 
 transpile-python: src/enc.py
 .PHONY: transpile-python
 
 src/enc.py: src/enc.en $(BOOTSTRAP_DEPS)
-	./enc "$<" -o "$@" $(BOOTSTRAP_FLAGS):./requirements.txt
+	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./requirements.txt
 
 build-rust: target/debug/enc
 .PHONY: build-rust
@@ -55,7 +70,7 @@ target/debug/enc: src/main.rs
 	cargo build
 
 src/main.rs: src/enc.en $(BOOTSTRAP_DEPS)
-	./enc "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
+	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
 
 bootstrap-python: src/enc.en $(BOOTSTRAP_DEPS)
 	./src/enc.bootstrap.py "$<" -o "src/enc.py" $(BOOTSTRAP_FLAGS):./requirements.txt
@@ -92,11 +107,8 @@ update-goldens: test.sh
 	./test.sh update
 .PHONY: update-goldens
 
-#test.py: test.en
-#	./enc "$<" -o "$@" --context-files Makefile
-
 test.sh: test.en
-	./enc "$<" -o "$@" --context-files Makefile
+	./enc-release "$<" -o "$@" --context-files Makefile
 
 format: format-python
 .PHONY: format
@@ -114,6 +126,12 @@ hello: examples/hello.en
 	cc "examples/hello.c" -o examples/hello
 	./examples/hello fnord
 .PHONY: hello
+
+hello-release: examples/hello.en
+	./enc-release "$<" -o "examples/hello.c"
+	cc "examples/hello.c" -o examples/hello
+	./examples/hello fnord
+.PHONY: hello-release
 
 hello-bootstrap: examples/hello.en
 	./src/enc.bootstrap.py "$<" -o "examples/hello.c"
@@ -156,6 +174,15 @@ examples/context:
 	@make -C "$@"
 .PHONY:
 
+res/pricing.json:
+	./scripts/pricing.py
+
+scripts: scripts/pricing.py
+.PHONY: scripts
+
+scripts/pricing.py: scripts/pricing.en
+	./enc-release "$<" -o "$@" --context-files ./res/pricing.json
+
 docs: doc/icon.png doc/booklet.md doc/enc.cast.gif
 .PHONY: docs
 
@@ -166,7 +193,7 @@ doc/icon.svg: doc/icon.en
 	./enc "$<" -o "$@" --context-files README.md:src/enc.en
 
 doc/booklet.md: doc/booklet.en .enc.env.example Makefile README.md src/enc.en examples/multi/README.md examples/parasite/README.md examples/balloons/README.md examples/web/README.md examples/context/README.md
-	./enc "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md:examples/context/README.md
+	./enc-release "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md:examples/context/README.md
 
 doc/CAST.md:
 	echo "# CAST" > "$@"
