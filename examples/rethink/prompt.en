@@ -1,0 +1,55 @@
+# Project Proposal: The "Curiosity Engine"
+
+## High-Level Goal
+
+Develop a versatile, modular program capable of performing a variety of "interesting things." The goal is to create a software playground that showcases different computational concepts in an engaging and interactive way. The user should be able to select a module and experience a unique, algorithmically-driven output.
+
+## Core Features (Choose one or more to implement)
+
+The program should be structured around one or more of the following modules, each representing an "interesting thing":
+
+### 1. Algorithmic Art Generator
+*   **Description:** Create a program that generates unique visual art based on mathematical rules.
+*   **Requirements:**
+    *   Implement at least one classic generative art algorithm (e.g., Perlin noise fields, L-systems for generating plant-like structures, cellular automata like Conway's Game of Life, or fractal generators like the Mandelbrot set).
+    *   Allow the user to provide a seed value or tweak basic parameters (e.g., color palette, iteration count, rule set) to influence the output.
+    *   The program should be able to save the generated image to a common file format (e.g., PNG, SVG).
+
+### 2. Procedural Narrative Engine
+*   **Description:** A program that constructs short, simple stories, poems, or dialogues based on a set of grammatical rules and vocabulary.
+*   **Requirements:**
+    *   Define a simple grammar (e.g., using context-free grammar or templates like `[SUBJECT] [VERB] the [ADJECTIVE] [OBJECT].`).
+    *   Maintain lists of nouns, verbs, adjectives, and other parts of speech that the engine can pull from.
+    *   The program should generate a new, unique text snippet each time it is run.
+    *   **Stretch Goal:** Implement a simple state machine to create a multi-sentence narrative where each sentence logically follows the previous one (e.g., a character can't drink from a cup before they pick it up).
+
+### 3. Mini Physics Simulator
+*   **Description:** A simple 2D physics simulation that models a specific phenomenon.
+*   **Requirements:**
+    *   Create a canvas or environment where objects can exist.
+    *   Implement a basic physics loop that updates object states over time.
+    *   Model a specific system, such as:
+        *   A particle system demonstrating flocking behavior (Boids algorithm).
+        *   A planetary system with bodies orbiting a central star based on gravitational attraction.
+        *   A simulation of bouncing balls in a box, accounting for gravity and conservation of momentum/energy.
+    *   The simulation should be rendered visually in real-time.
+
+### 4. Interactive Data Explorer
+*   **Description:** A tool that ingests a dataset and allows the user to explore it through an interesting, non-traditional interface.
+*   **Requirements:**
+    *   Choose a compelling public dataset (e.g., UFO sightings, global temperature anomalies, historical events).
+    *   Instead of a standard chart, present the data in a novel way. Examples:
+        *   A "time machine" interface that lets the user scroll through a timeline and see events pop up.
+        *   A "sonification" module that translates data points into musical notes or sounds.
+        *   A geographical map where data points are represented by interactive, pulsating circles.
+    *   The user should be able to filter or query the data in a simple way.
+
+## Technical Specifications
+*   **Language:** Open to developer choice, but Python (with libraries like `pygame`, `matplotlib`, `numpy`) or JavaScript (with `p5.js` or `d3.js`) are highly recommended for their strengths in visualization and rapid prototyping.
+*   **Interface:** Can be a Command-Line Interface (CLI) for simpler modules (like the narrative engine) or a simple Graphical User Interface (GUI) for visual modules.
+*   **Code Quality:** The code should be well-structured, with clear separation between the core logic of each module and the user interface. Include comments explaining the "interesting" algorithms.
+
+## Success Criteria
+*   The final program successfully implements at least one of the core feature modules as described.
+*   The program is interactive, allowing the user to initiate the process and observe the result.
+*   The output is demonstrably "interesting"—it is non-deterministic (within its ruleset) and provides a different experience on subsequent runs or with different user inputs.
