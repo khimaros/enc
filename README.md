@@ -1,10 +1,12 @@
 # enc
 
+`cc`, but for english
+
 the english to anything transpiler
 
 inspired by https://github.com/theletterf/english-lang
 
-`enc` is self hosting and the english definition is at [./src/enc.en](./src/enc.en)
+`enc` is self hosting (meaning it is used to build itself) and its english definition is at [./src/enc.en](./src/enc.en)
 
 detailed docs are available in [./doc/booklet.md](doc/booklet.md)
 
@@ -89,7 +91,7 @@ $ make
 
 mise is recommended for a more contained/reproducible build
 
-# configuration
+## configuration
 
 download the example config [./.enc.env.example](./.enc.env.example)
 
