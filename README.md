@@ -2,7 +2,7 @@
 
 `cc` for english or: the english to anything transpiler
 
-`enc` transpiles plain english description of code to any other
+`enc` transpiles a plain english description of code to any other
 programming language, with the help of Generative AI.
 
 inspired by https://github.com/theletterf/english-lang
