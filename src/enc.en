@@ -37,16 +37,16 @@ the API key of the SELECTED provider is the ONLY one that is required at runtime
 
 ## configuration
 
-enc uses a layered configuration. settings are loaded in the following order:
+enc uses a layered configuration. settings are sourced with the following precedence (from highest to lowest):
 
 1. command line flags
 2. working dir config: ./.enc.env
 3. home config: ~/.enc.env
 4. hardcoded fallbacks in the application based on those in ./.enc.env.example
 
-enc uses the first value it finds for environment variables; the working directory config (`./.enc.env`) overrides the home config (`~/.enc.env`), and command line flags override all environment configurations.
+configuration from sources with higher precedence override values from sources with lower precedence.
 
-the "consolidated configuration" is what results from processing all layered configuration sources. the "redacted configuration" is what results from filtering the consolidated configuration.
+the "consolidated configuration" is what results from processing all layered configuration sources. the "redacted configuration" is what results from filtering API keys from the consolidated configuration.
 
 EVERY configuration setting is also available as command line flag.
 
@@ -60,7 +60,7 @@ when using a flag parsing library, all short flags are explicitly defined. input
 
 ## logging
 
-each invocation of enc creates a new log file using a timestamp as the file name.
+each invocation of enc creates a new log file in the directory specified by the LOGS_PATH setting, using a timestamp as the file name.
 
 the full path to the log file is written to the console when the program starts.
 
@@ -68,7 +68,7 @@ detailed logging goes ONLY to the log file, not to the console.
 
 API keys are redacted from the log output.
 
-the consolidated configuration is logged at the start of each invocation.
+the redacted consolidated configuration is logged at the start of each invocation.
 
 the template expanded prompt is logged.
 
@@ -94,7 +94,7 @@ the following keys will be substituted before sending to the LLM provider:
 
 template expansion is done ONCE as a SINGLE PASS to ensure that template formatting in the referended files is NOT expanded recursively.
 
-if the target format is a derivative of XML (eg. SVG), enc will strip double-hyphens (`--`) from `generation_command` before expanding that variable in the prompt.
+if the target format is a derivative of XML (eg. SVG), enc will strip all double-hyphens (`--`) from `generation_command` before expanding that variable in the prompt. for example, `--show-config` would become `show-config`.
 
 if the HACKING_CONVENTIONS source file is not present, that section of the prompt will be empty, and the program will continue without error.
 
@@ -103,9 +103,9 @@ if the HACKING_CONVENTIONS source file is not present, that section of the promp
 enc searches for resource files (any file under `./res/`) in a specific order:
 
 1. each path (colon separated) provided in the `RESOURCES_PATH` setting. `${XDG_DATA_HOME}` will be expanded to the env variable contents. if it is not set, it will fall back to `$HOME/.local/share`.
-2. as a final fallback, resource files are embedded directly into the compiled binary and read from memory.
+2. ONLY for compiled languages, as a final fallback, macros are used to embed the resource files into the compiled binary and read from memory..
 
-this applies to all files from CONTEXT FILES under ./res/ including:
+this applies to all files under ./res/ including:
 
 - ./res/languages.json
 - ./res/pricing.json
@@ -117,39 +117,35 @@ the user can provide a seed to request deterministic outputs. if no seed is prov
 
 ## provider workarounds
 
-with the "google" and "anthropic" providers, the seed parameter ISN'T supported. instead, temperature is set to 0.
+with the "google" and "anthropic" providers, the seed parameter ISN'T supported. instead, temperature is set to 0. the temperature workaround is only used if seed is EXPLICITLY provided by the user in settings or flags. for providers which support seeds, the seed can be generated randomly at invocation time.
 
-the temperature workaround is only used if seed is EXPLICITLY provided by the user in settings or flags. for providers which support seeds, the seed can be generated randomly at invocation time.
+with "anthropic" provider, it is sometimes necessary to strip out `<thinking></thinking>` blocks. they will only be striopped from the beginning of the response if present.
+
+if the provider returns markdown backtick fencing around the code, it will be removed before being written to the output file. markdown code fences will ONLY be removed from the very first and very last lines of the LLM output. fences with a language name should also be removed.
+
+it is CRITICAL that long responses are handled correctly. for example, with the "google" provider it is necessary to concatenate the "text" parts in `candidates/content/parts` as in: `{"candidates": [{"content": {"parts": [{ "text": "some " }, {"text": "more" }]}}]}`
+
+a similar pattern is required for the "anthropic" provider which can contain multiple "content" blocks as in: `{"content": [{"type": "text", "text": "some "}, {"type": "text", "text": "more"}]}`
 
 ## token budgets
 
-token limits are enforced for all models.
+most models have token limits. if available, they are found in `./res/pricing.json`. if `max_tokens` is not present in the pricing data, a default of 8192 will be assumed.
 
-if `max_tokens` is not present in the pricing data, a default of 8192 will be assumed.
+the `MAX_TOKENS` setting (if explicitly set) is used to override the per-model `max_tokens` from `./res/pricing.json`. this value is passed directly to the provider, and may result in an error if it exceeds a model's context window limit.
 
-the `MAX_TOKENS` setting (if explicitly set) can be used to override the per-model `max_tokens` from `./res/pricing.json`. the `MAX_TOKENS` setting is NOT sent to the Google provider API.
-
-the `THINKING_BUDGET` is a configured value that is not currently passed to any provider.
-
-pricing data for language model API calls is shown after the call completes, based on the pricing data in `./res/pricing.json`. costs accounted by input, output, and thinking costs.
+pricing data for language model API calls is shown after the call completes, based on the pricing data in `./res/pricing.json`. costs are accounted by input, output, and thinking costs.
 
 if cost per thinking token is not known, they are priced as output tokens.
 
-some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated by subtracting the known input/output token usage from the total token usage.
+some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated using the formula: `thinking_tokens = total_tokens - input_tokens - output_tokens`. for providers like anthropic that do not return a total token count, thinking tokens cannot be calculated and will be reported as 0.
 
 ## code generation
 
-the target language is automatically determined based on the file extension of the output file.
+the target language name is loaded from `./res/languages.json`. that resource file contains an exhaustive language map of the form `{".rs": "rust", ".py": "python"}`.
 
-there is a language map of the form `{"rs": "rust"}` in `./res/languages.json`.
+the key is the file extension or base file name of the output file. for files without extensions (eg. Makefile), the base name is used as the key.
 
-if the target language is not recognized by the file extension, the file extension or the file base name are passed to the LLM at inference time.
-
-if the language model returns markdown fencing around the code, it will be removed before being written to the output file. markdown code fences will ONLY be removed from the very first and very last line of the LLM output!
-
-## language model prices
-
-model pricing data will be loaded from `./res/pricing.json` in CONTEXT FILES.
+if the target language is not found in the map, the key used for the lookup (the file extension, or the file base name if no extension is present) is passed to the LLM at inference time.
 
 ## security
 

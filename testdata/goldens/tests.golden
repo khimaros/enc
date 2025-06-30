@@ -1,16 +1,16 @@
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20250627_113739.log
+debug log path: ./log/20250630_115044.log
 provider: google, model: gemini-2.5-flash
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 347 input, 139 output, 1073 thinking
+tokens: 394 input, 154 output, 693 thinking
 estimated cost:
-  - input   : $0.000121
-  - output  : $0.000348
-  - thinking: $0.002683
-total: $0.003151
+  - input   : $0.000138
+  - output  : $0.000385
+  - thinking: $0.001733
+total: $0.002255
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
@@ -29,7 +29,7 @@ total: $0.003151
     "./res/",
     "${XDG_DATA_HOME}/enc/res/"
   ],
-  "seed": 4477450301430374076,
+  "seed": 13835039699947226899,
   "thinking_budget": 1024,
   "timeout": 1800,
   "user_provided_seed": false
@@ -37,18 +37,18 @@ total: $0.003151
 python main.py
 the answer to the meaning of life, the universe and everything
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20250627_113745.log
+debug log path: ./log/20250630_115049.log
 provider: anthropic, model: claude-3-7-sonnet-20250219
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 370 input, 164 output, 0 thinking
+tokens: 419 input, 163 output, 0 thinking
 estimated cost:
-  - input   : $0.001110
-  - output  : $0.002460
+  - input   : $0.001257
+  - output  : $0.002445
   - thinking: $0.000000
-total: $0.003570
+total: $0.003702
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
@@ -67,11 +67,10 @@ total: $0.003570
     "./res/",
     "${XDG_DATA_HOME}/enc/res/"
   ],
-  "seed": 3315979396289660611,
+  "seed": 4150108210754526380,
   "thinking_budget": 1024,
   "timeout": 1800,
   "user_provided_seed": false
 }
 python main.py
 the answer to the meaning of life, the universe and everything
-

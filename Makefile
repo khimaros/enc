@@ -70,6 +70,12 @@ build-rust: target/debug/enc
 target/debug/enc: src/main.rs
 	cargo build
 
+enc-cpp: src/enc.cpp
+	g++ -std=c++20 "$<" -o "$@" -lcpr
+
+src/enc.cpp: src/enc.en CMakeLists.txt $(BOOTSTRAP_DEPS)
+	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):CMakeLists.txt
+
 src/main.rs: src/enc.en $(BOOTSTRAP_DEPS)
 	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
 
@@ -103,6 +109,10 @@ update-goldens: test.sh
 tests:
 	@make -C tests
 .PHONY: tests
+
+tests-cpp:
+	@make -C tests ENC_EDITION=enc-cpp
+.PHONY: tests-cpp
 
 tests-python:
 	@make -C tests ENC_EDITION=enc-python
@@ -191,6 +201,9 @@ doc/icon.png: doc/icon.svg
 
 doc/icon.svg: doc/icon.en
 	./enc "$<" -o "$@" --context-files README.md:src/enc.en
+
+doc/pitch.md: doc/pitch.en src/enc.en
+	./enc-release "$<" -o "$@" --context-files src/enc.en
 
 doc/booklet.md: doc/booklet.en .enc.env.example Makefile README.md src/enc.en examples/multi/README.md examples/parasite/README.md examples/balloons/README.md examples/web/README.md
 	./enc-release "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md --model=gemini-2.5-flash

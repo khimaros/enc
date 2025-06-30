@@ -574,7 +574,7 @@ async fn call_anthropic_api(
 
     let mut body = serde_json::json!({
         "model": config.model,
-        "max_tokens": get_max_tokens(config, log_file)?,
+        "max_tokens": get_max_tokens(config)?,
         "messages": [{ "role": "user", "content": prompt }],
         "stream": false,
     });
@@ -617,12 +617,14 @@ async fn call_anthropic_api(
         serde_json::to_string_pretty(&response_body)?
     )?;
 
-    let full_text = response_body["content"]
+    let raw_text = response_body["content"]
         .as_array()
         .unwrap_or(&vec![])
         .iter()
         .filter_map(|block| block["text"].as_str())
         .collect::<String>();
+
+    let full_text = strip_anthropic_thinking(&raw_text);
 
     let usage = ApiUsage {
         input_tokens: response_body["usage"]["input_tokens"]
@@ -650,7 +652,7 @@ async fn call_openai_api(
         "model": config.model,
         "messages": [{ "role": "user", "content": prompt }],
         "seed": config.seed,
-        "max_tokens": get_max_tokens(config, log_file)?,
+        "max_tokens": get_max_tokens(config)?,
         "stream": false,
     });
 
@@ -715,7 +717,7 @@ async fn call_openai_api(
 // a single comment per function describing its purpose is adequate.
 /// calculates the effective max_tokens value, respecting both user settings and model limits.
 // ENGLISH DESCRIPTION: token limits are enforced for all models. the `MAX_TOKENS` setting (if explicitly set) can be used to override the per-model `max_tokens`
-fn get_max_tokens(config: &Config, log_file: &mut File) -> Result<u32> {
+fn get_max_tokens(config: &Config) -> Result<u32> {
     let pricing_str = load_resource(config, "pricing.json")?;
     let pricing_data: PricingData = serde_json::from_str(&pricing_str)?;
     let model_key = format!("{}/{}", config.provider, config.model);
@@ -726,15 +728,7 @@ fn get_max_tokens(config: &Config, log_file: &mut File) -> Result<u32> {
         .unwrap_or(8192);
 
     match config.max_tokens {
-        Some(user_max) => {
-            // ENGLISH DESCRIPTION: the setting cannot be made higher than the pricing limit.
-            if user_max > model_limit {
-                writeln!(log_file, "warning: user-defined MAX_TOKENS ({user_max}) exceeds model limit ({model_limit}). using model limit.")?;
-                Ok(model_limit)
-            } else {
-                Ok(user_max)
-            }
-        }
+        Some(user_max) => Ok(user_max),
         None => Ok(model_limit),
     }
 }
@@ -750,6 +744,15 @@ fn strip_markdown_fences(text: &str) -> String {
         return captures.get(1).map_or(text, |m| m.as_str()).to_string();
     }
     text.to_string()
+}
+
+// a single comment per function describing its purpose is adequate.
+/// removes anthropic thinking tags from the start of a string.
+fn strip_anthropic_thinking(text: &str) -> String {
+    lazy_static::lazy_static! {
+        static ref THINKING_RE: Regex = Regex::new(r"(?s)^<thinking>.*?</thinking>\s*").unwrap();
+    }
+    THINKING_RE.replace(text, "").into_owned()
 }
 
 // a single comment per function describing its purpose is adequate.
