@@ -79,6 +79,9 @@ src/enc.cpp: src/enc.en CMakeLists.txt $(BOOTSTRAP_DEPS)
 src/main.rs: src/enc.en $(BOOTSTRAP_DEPS)
 	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
 
+src/main.hs: src/enc.en $(BOOTSTRAP_DEPS)
+	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS)
+
 bootstrap-python: src/enc.en $(BOOTSTRAP_DEPS)
 	./src/enc.bootstrap.py "$<" -o "src/enc.py" $(BOOTSTRAP_FLAGS):./requirements.txt
 .PHONY: bootstrap-python

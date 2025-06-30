@@ -6,3 +6,4 @@ target/
 /examples/hello
 /testdata/output/
 /enc-cpp
+/examples/interlang/main
