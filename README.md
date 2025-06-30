@@ -1,8 +1,9 @@
 # enc
 
-`cc`, but for english
+`cc` for english or: the english to anything transpiler
 
-the english to anything transpiler
+`enc` transpiles plain english description of code to any other
+programming language, with the help of Generative AI.
 
 inspired by https://github.com/theletterf/english-lang
 
@@ -11,9 +12,6 @@ inspired by https://github.com/theletterf/english-lang
 detailed docs are available in [./doc/booklet.md](doc/booklet.md)
 
 ## overview
-
-`enc` transpiles plain english description of code to any other
-programming language, with the help of Generative AI.
 
 ![enc asciicast](./doc/enc.cast.gif)
 
