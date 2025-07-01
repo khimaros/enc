@@ -1,6 +1,8 @@
 the icon for enc looks like the icon of a hacker tool
 
-the icon uses mostly pastel colors
+the icon is a still image, NOT animated
+
+the dimensions of the image are 512x512
 
 the icon DOESN'T contain any letters or words
 
@@ -8,8 +10,10 @@ the SVG produced DOESN'T use advanced filters like dropShadow
 
 it is more abstract than literal but reflects the purpose of the tool
 
-the icon is a still image, NOT animated
+the foreground colors stand out and contrast nicely with a dark background
 
-the background is transparent but has an opaque inset shape as the base layer
+the background is transparent but has a dark, opaque, inset shape as the base layer
 
-there is NOT a GUI wiindow of any kind in the icon
+there is NOT a GUI window of any kind in the icon
+
+the icon makes use of gradients to give it an 80s shoe-gaze vibe
