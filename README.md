@@ -7,7 +7,7 @@ programming language, with the help of Generative AI.
 
 inspired by https://github.com/theletterf/english-lang
 
-`enc` is self hosting (meaning it is used to build itself) and its english definition is at [./src/enc.en](./src/enc.en)
+`enc` is self hosting (meaning it is used to build itself) and its english definition is at [./src/enc.en](./src/enc.en). also, [list `*.en` in repo](https://github.com/search?q=repo%3Akhimaros%2Fenc+path%3A*.en&type=code).
 
 detailed docs are available in [./doc/booklet.md](doc/booklet.md)
 
