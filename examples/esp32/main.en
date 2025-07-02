@@ -1,0 +1,7 @@
+this is a firmware for an esp32 device
+
+the LED on pin D2 will blink on and off at 2hz
+
+the BOOT button on GPIO0 will toggle the blinking, default to on
+
+serial console will log when the blinking is toggled and also each time the LED state changes
