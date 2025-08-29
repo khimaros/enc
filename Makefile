@@ -140,13 +140,13 @@ format-python:
 .PHONY: format-python
 
 hello: examples/hello.en
-	./enc "$<" -o "examples/hello.c" --model=gemini-2.5-flash
+	./enc "$<" -o "examples/hello.c" --provider=google --model=gemini-2.5-flash
 	cc "examples/hello.c" -o examples/hello
 	./examples/hello fnord
 .PHONY: hello
 
 hello-release: examples/hello.en
-	./enc-release "$<" -o "examples/hello.c" --model=gemini-2.5-flash
+	./enc-release "$<" -o "examples/hello.c" --provider=google --model=gemini-2.5-flash
 	cc "examples/hello.c" -o examples/hello
 	./examples/hello fnord
 .PHONY: hello-release
@@ -209,7 +209,7 @@ doc/pitch.md: doc/pitch.en src/enc.en
 	./enc-release "$<" -o "$@" --context-files src/enc.en
 
 doc/booklet.md: doc/booklet.en .enc.env.example Makefile README.md src/enc.en examples/multi/README.md examples/parasite/README.md examples/balloons/README.md examples/web/README.md
-	./enc-release "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md --model=gemini-2.5-flash
+	./enc-release "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md --provider=google --model=gemini-2.5-flash
 
 doc/CAST.md:
 	echo "# CAST" > "$@"

@@ -27,7 +27,7 @@ enc can make use of any OpenAI compatible API backend via the `/chat/completions
 
 enc can make use of the Google Generative AI API backend via the `v1beta/models/{model}:generateContent` endpoint. supported models include: gemini-2.5-pro, gemini-2.5-pro-preview-06-05, gemini-2.5-flash.
 
-enc can make use of the Anthropic Claude API backend via the `/v1/messages` endpoint. API calls include the header `anthropic-version: 2023-06-01`. supported models include: claude-sonnet-4-20250514, claude-3-7-sonnet-20250219.
+enc can make use of the Anthropic Claude API backend via the `/v1/messages` endpoint with streaming support enabled. API calls include the header `anthropic-version: 2023-06-01` and use `"stream": true` for real-time response generation. supported models include: claude-sonnet-4-20250514, claude-3-7-sonnet-20250219, claude-opus-4-1-20250805.
 
 enc DOESN'T support any form of tool calling.
 
@@ -50,17 +50,24 @@ the "consolidated configuration" is what results from processing all layered con
 
 EVERY configuration setting is also available as command line flag.
 
+## default models
+
+when no model is explicitly specified, enc uses provider-specific defaults:
+- google: gemini-2.5-pro  
+- anthropic: claude-sonnet-4-20250514
+- openai: gpt-5-2025-08-07
+
 when the `--show-config` flag is provided, enc FIRST loads all sources of configuration and then writes the redacted config to the console. the program exits immediately after the configuration has been written.
 
 ## library workarounds
 
-when using a dotenv library, all env file paths are explicitly defined to ensure the correct load order.
+when using a dotenv library, all env file paths are explicitly defined to ensure the correct load order. CRITICAL: dotenvy gives precedence to the first file loaded, so files MUST be loaded in reverse precedence order (highest precedence first).
 
 when using a flag parsing library, all short flags are explicitly defined. input and output file arguments are declared as required unless the `--show-config` flag is present.
 
 ## logging
 
-each invocation of enc creates a new log file in the directory specified by the LOGS_PATH setting, using a timestamp as the file name.
+each invocation of enc creates a new log file in the directory specified by the LOGS_PATH setting, using a timestamp as the file name in the format `YYYYMMDD_HHMMSS.log`.
 
 the full path to the log file is written to the console when the program starts.
 
@@ -72,7 +79,7 @@ the redacted consolidated configuration is logged at the start of each invocatio
 
 the template expanded prompt is logged.
 
-text content returned by the LLM is logged.
+text content returned by the LLM is logged. for streaming responses, both the incremental deltas and final accumulated response are logged. thinking deltas and signature deltas are also logged when present.
 
 errors always include the file and line number, at least when built or run in debug mode.
 
@@ -90,7 +97,7 @@ the following keys will be substituted before sending to the LLM provider:
 - `output_path`: the output path of the file being generated
 - `english_content`: the exact content of the provided `.en` input file
 - `hacking_conventions`: the exact content of the configured HACKING_CONVENTIONS file
-- `context_files`: the exact, unmodified paths and contents of the files configured in CONTEXT_FILES. for each file, include a markdown header with the relative path to that file, followed by the full contents of the file inside a markdown fenced code block. in particular, file paths SHOULDN'T have "./" prepended to them automatically.
+- `context_files`: the exact, unmodified paths and contents of the files configured in CONTEXT_FILES. for each file, include a markdown header with the relative path to that file, followed by the full contents of the file inside a markdown fenced code block. in particular, file paths SHOULDN'T have "./" prepended to them automatically. if any context file cannot be read, enc will exit with an error.
 
 template expansion is done ONCE as a SINGLE PASS to ensure that template formatting in the referended files is NOT expanded recursively.
 
@@ -119,13 +126,42 @@ the user can provide a seed to request deterministic outputs. if no seed is prov
 
 with the "google" and "anthropic" providers, the seed parameter ISN'T supported. instead, temperature is set to 0. the temperature workaround is only used if seed is EXPLICITLY provided by the user in settings or flags. for providers which support seeds, the seed can be generated randomly at invocation time.
 
-with "anthropic" provider, it is sometimes necessary to strip out `<thinking></thinking>` blocks. they will only be striopped from the beginning of the response if present.
+with the "anthropic" provider, extended thinking can be enabled by including a `thinking` object in the request when `thinking_budget > 0`:
+
+```json
+{
+  "thinking": {
+    "type": "enabled",
+    "budget_tokens": 2048
+  }
+}
+```
 
 if the provider returns markdown backtick fencing around the code, it will be removed before being written to the output file. markdown code fences will ONLY be removed from the very first and very last lines of the LLM output. fences with a language name should also be removed.
 
 it is CRITICAL that long responses are handled correctly. for example, with the "google" provider it is necessary to concatenate the "text" parts in `candidates/content/parts` as in: `{"candidates": [{"content": {"parts": [{ "text": "some " }, {"text": "more" }]}}]}`
 
 a similar pattern is required for the "anthropic" provider which can contain multiple "content" blocks as in: `{"content": [{"type": "text", "text": "some "}, {"type": "text", "text": "more"}]}`
+
+### anthropic streaming implementation
+
+enc uses server-sent events (SSE) streaming for real-time response generation with the anthropic provider. the streaming implementation handles the following event types:
+
+- `message_start`: contains initial message metadata and input token count
+- `content_block_start`: signals the start of a new content block (text, tool_use, or thinking)
+- `content_block_delta`: contains incremental content updates with the following delta types:
+  - `text_delta`: incremental text content that is immediately displayed to the user
+  - `thinking_delta`: incremental thinking content that is logged but not displayed
+  - `signature_delta`: cryptographic signature for thinking block verification
+- `content_block_stop`: signals the end of a content block
+- `message_delta`: contains final message metadata and output token counts
+- `message_stop`: signals the end of the streaming response
+- `ping`: keepalive events that are ignored
+- `error`: error events that should be handled gracefully
+
+the streaming parser uses line buffering to handle partial SSE events and accumulates text deltas for the final response. the parser ignores empty lines and lines starting with ':' (SSE comment events). thinking content and signatures are logged for debugging but not included in the final output.
+
+streaming accumulates the complete response internally without displaying partial output to the user, then writes the final result to the output file.
 
 ## token budgets
 
@@ -137,7 +173,34 @@ pricing data for language model API calls is shown after the call completes, bas
 
 if cost per thinking token is not known, they are priced as output tokens.
 
-some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated using the formula: `thinking_tokens = total_tokens - input_tokens - output_tokens`. for providers like anthropic that do not return a total token count, thinking tokens cannot be calculated and will be reported as 0.
+some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated using the formula: `thinking_tokens = total_tokens - input_tokens - output_tokens`. for anthropic, thinking tokens are calculated by tokenizing the accumulated thinking content from `thinking_delta` events. if no tokenizer is available, thinking tokens will be reported as 0.
+
+the format of `./res/pricing.json` is as follows:
+
+```json
+{
+    "anthropic/claude-4-sonnet-20250514": {
+        "input_cost_per_token": 3e-06,
+        "input_cost_per_token_above_200k_tokens": 6e-06,
+        "max_input_tokens": 1000000,
+        "max_tokens": 1000000,
+        "output_cost_per_token": 1.5e-05,
+        "output_cost_per_token_above_200k_tokens": 2.25e-05
+    },
+    "google/gemini-2.5-pro": {
+        "input_cost_per_token": 1.25e-06,
+        "input_cost_per_token_above_200k_tokens": 2.5e-06,
+        "max_input_tokens": 1048576,
+        "max_tokens": 65535,
+        "output_cost_per_token": 1e-05,
+        "output_cost_per_token_above_200k_tokens": 1.5e-05,
+        "source": "https://cloud.google.com/vertex-ai/generative-ai/pricing"
+    },
+    // ... and so on ...
+}
+
+any missing fields will be gracefully handled by the parser.
+```
 
 ## code generation
 

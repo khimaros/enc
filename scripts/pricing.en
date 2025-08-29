@@ -1,12 +1,10 @@
-this script downloads and converts pricing data from aider
+this script downloads and converts pricing data from litellm
 
-the source url is: https://raw.githubusercontent.com/Aider-AI/aider/refs/heads/main/aider/resources/model-metadata.json
+the source url is: https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json
 
-with python, json5 should be used to parse the source data.
+with python, json5 should be used to parse the source data as exponent forms are used for some of the floating point values.
 
-the base JSON is an object and the keys are of the form "<provider>/<model>"
-
-each key of that form has a value of which is an object.
+the base JSON is an object and the keys are strings and each value is another object.
 
 those objects have many keys, but will be filtered to have only the following ones:
 
@@ -18,52 +16,66 @@ those objects have many keys, but will be filtered to have only the following on
 - output_cost_per_token_above_200k_tokens
 - source
 
-where provider is "gemini", it will be replaced with "google"
+items which are missing `input_cost_per_token` or `output_cost_per_token` will be skipped.
 
-if no provider is specified, that entire object should be skipped.
-
-if there is an extra "openrouter/" prefix, it should be removed.
+the key named "sample_spec" should be skipped.
 
 the source data looks like:
 
 ```json
 {
     "gemini/gemini-2.5-pro": {
-        "max_tokens": 65536,
+        "max_tokens": 65535,
         "max_input_tokens": 1048576,
-        "max_output_tokens": 65536,
+        "max_output_tokens": 65535,
         "max_images_per_prompt": 3000,
         "max_videos_per_prompt": 10,
         "max_video_length": 1,
         "max_audio_length_hours": 8.4,
         "max_audio_per_prompt": 1,
-        "max_pdf_size_mb": 20,
-        "input_cost_per_token": 0.00000125,
-        "input_cost_per_token_above_200k_tokens": 0.0000025,
-        "output_cost_per_token": 0.00001,
-        "output_cost_per_token_above_200k_tokens": 0.000015,
+        "max_pdf_size_mb": 30,
+        "input_cost_per_token": 1.25e-06,
+        "input_cost_per_token_above_200k_tokens": 2.5e-06,
+        "output_cost_per_token": 1e-05,
+        "output_cost_per_token_above_200k_tokens": 1.5e-05,
         "litellm_provider": "gemini",
         "mode": "chat",
         "rpm": 2000,
-        "tpm": 8000000,
+        "tpm": 800000,
         "supports_system_messages": true,
         "supports_function_calling": true,
         "supports_vision": true,
+        "supports_audio_input": true,
+        "supports_video_input": true,
+        "supports_pdf_input": true,
         "supports_response_schema": true,
-        "supports_audio_output": false,
         "supports_tool_choice": true,
-        "supported_modalities": ["text", "image", "audio", "video"],
-        "supported_output_modalities": ["text"],
-        "source": "https://ai.google.dev/gemini-api/docs/pricing#gemini-2.5-pro"
-    }
+        "supports_reasoning": true,
+        "supported_endpoints": [
+            "/v1/chat/completions",
+            "/v1/completions"
+        ],
+        "supported_modalities": [
+            "text",
+            "image",
+            "audio",
+            "video"
+        ],
+        "supported_output_modalities": [
+            "text"
+        ],
+        "source": "https://cloud.google.com/vertex-ai/generative-ai/pricing",
+        "supports_web_search": true,
+        "cache_read_input_token_cost": 3.125e-07,
+        "supports_prompt_caching": true
+    },
+    // ... more models follow ...
 }
 ```
 
-not all objects contain all of the keys listed here.
+not all objects contain all of the keys listed above.
 
-there will be many models in the source data and they should all be converted.
-
-and it should be converted to look like:
+the output should look like:
 
 ```json
 {
@@ -79,17 +91,14 @@ and it should be converted to look like:
 }
 ```
 
+all keys will be sorted for deterministic output.
+
+only items with key `litellm_provider` and value of "gemini", "anthropic", or "openai" will be included. all other items will be skipped.
+
+when creating the key for the output, the model name will be prefixed with the value of the `litellm_provider` key and separated by `/`. where provider is "gemini", it will be prefixed with "google" meaning the "gemini/" prefix will be removed and "google/" will be added.
+
+for "claude-3-7-sonnet-20250219" and "claude-3-7-sonnet-latest", the max_tokens will be written as 64000, regardless of what it says in the input JSON.
+
 in general, the JSON parsing is extremely permissive to well formedness issues.
-
-the following data should also be added:
-
-```json
-    "anthropic/claude-sonnet-4-20250514": {
-        "input_cost_per_token": 3e-06,
-        "max_input_tokens": 200000,
-        "max_tokens": 8192,
-        "output_cost_per_token": 1.5e-05
-    },
-```
 
 the resulting data should be written to ./res/pricing.json

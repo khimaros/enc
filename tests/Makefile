@@ -6,7 +6,7 @@ test:
 .PHONY: test
 
 test-anthropic:
-	@make -B -C simple PROVIDER=anthropic MODEL=claude-3-7-sonnet-20250219
+	@make -B -C simple PROVIDER=anthropic MODEL=claude-sonnet-4-20250514
 .PHONY: test-anthropic
 
 test-release:
