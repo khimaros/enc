@@ -8,6 +8,8 @@ on update, the result of the build including all shell history is saved to golde
 
 output of the `make` command (lines beginning with `make: ` or `make[`) will be filtered out.
 
+when running make targets, both stdout and stderr should be captured together. the filtered output should always be echoed before returning, even if the target fails with non-zero exit status.
+
 the name of the golden output files should have "/" in target names replaced with "-"
 
 on test, the same results are computed and compared to the goldens

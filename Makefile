@@ -77,7 +77,7 @@ src/enc.cpp: src/enc.en CMakeLists.txt $(BOOTSTRAP_DEPS)
 	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):CMakeLists.txt
 
 src/main.rs: src/enc.en $(BOOTSTRAP_DEPS)
-	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
+	TEST_COMMAND="make test" ./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
 
 src/main.hs: src/enc.en $(BOOTSTRAP_DEPS)
 	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS)
@@ -98,8 +98,13 @@ touch:
 	touch examples/web/index.en examples/web/styles.en examples/web/main.en
 .PHONY: touch
 
-precommit: test-goldens
+precommit: test
 .PHONY: precommit
+
+test:
+	cargo build
+	./test.sh test
+.PHONY: test
 
 test-goldens: test.sh
 	./test.sh test
@@ -158,13 +163,13 @@ hello-bootstrap: examples/hello.en
 .PHONY: hello-bootstrap
 
 hello-python: examples/hello.en
-	./enc-python "$<" -o "examples/hello.c"
+	./enc-python "$<" -o "examples/hello.c" --provider=google --model=gemini-2.5-flash
 	cc "examples/hello.c" -o examples/hello
 	./examples/hello fnord
 .PHONY: hello-python
 
 hello-rust: examples/hello.en
-	./enc-rust "$<" -o "examples/hello.c"
+	./enc-rust "$<" -o "examples/hello.c" --provider=google --model=gemini-2.5-flash
 	cc "examples/hello.c" -o examples/hello
 	./examples/hello fnord
 .PHONY: hello-rust

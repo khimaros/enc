@@ -37,14 +37,19 @@ enc uses explicit timeouts (TIMEOUT from settings) for all API calls.
 
 the API key of the SELECTED provider is the ONLY one that is required at runtime.
 
+when an API call fails (eg. due to insufficient credits, rate limiting, or network errors), enc will return an error and NOT overwrite the output file.
+
+if the LLM returns an empty response, enc will refuse to overwrite the output file and exit with an error.
+
 ## configuration
 
 enc uses a layered configuration. settings are sourced with the following precedence (from highest to lowest):
 
 1. command line flags
-2. working dir config: ./.enc.env
-3. home config: ~/.enc.env
-4. hardcoded fallbacks in the application based on those in ./.enc.env.example
+2. environment variables (eg. `MODEL=xx PROVIDER=yy enc ...`)
+3. working dir config: ./.enc.env
+4. home config: ~/.enc.env
+5. hardcoded fallbacks in the application based on those in ./.enc.env.example
 
 configuration from sources with higher precedence override values from sources with lower precedence.
 
@@ -52,18 +57,64 @@ the "consolidated configuration" is what results from processing all layered con
 
 EVERY configuration setting is also available as command line flag.
 
+## test iteration mode
+
+enc supports iterative refinement through automated testing. when `TEST_COMMAND` is provided, enc will run the specified command after each transpilation.
+
+the test command is executed with a restricted environment to prevent parent process environment variables from leaking into the test subprocess. the only variables that are preserved for the child process are those in the following whitelist:
+
+- PATH
+- RUSTUP_HOME
+- CARGO_HOME
+
+when test commands are executed, the relevant status line is written to the console:
+
+```
+executing test command (`make test`), attempt 1/5
+test command failed, see log for details
+executing test command (`make test`), attempt 2/5
+test command succeeded!
+```
+
+if the test command exits with a non-zero status code, enc will:
+1. capture the test output (stdout and stderr)
+2. read the generated code from the output file
+3. pass both the generated code and test failures back to the LLM
+4. retry transpilation with this context
+
+this loop continues until either:
+
+- the test command succeeds (exits with code 0), or
+- `TEST_ITERATIONS` is reached
+
+on each retry iteration, the LLM receives:
+
+- the previously generated source code
+- the test command that was executed
+- the exit code from the test
+- the complete stdout and stderr output
+
+this allows the LLM to iteratively fix issues based on actual test failures.
+
+if (and only if) API calls are made, the total API cost across all iterations is accumulated and displayed at the end of the invocation.
+
+if tests still fail after reaching `TEST_ITERATIONS`, enc exits with code 1.
+
+if an error occurs during any iteration (eg. API error, network failure), the error is printed to the console along with the accumulated API cost summary before exiting.
+
 ## default models
 
 when no model is explicitly specified, enc uses provider-specific defaults:
-- google: gemini-2.5-pro  
+
+- google: gemini-2.5-pro
 - anthropic: claude-sonnet-4-20250514
 - openai: gpt-5-2025-08-07
 
-when the `--show-config` flag is provided, enc FIRST loads all sources of configuration and then writes the redacted config to the console. the program exits immediately after the configuration has been written.
+when the `--show-config` flag is provided, enc FIRST loads all sources of configuration and then writes the redacted config to the console in JSON format. the program exits immediately after the configuration has been written. the config keys should be lexically sorted when output.
 
 ## library workarounds
 
-when using a dotenv library, all env file paths are explicitly defined to ensure the correct load order. CRITICAL: dotenvy gives precedence to the first file loaded, so files MUST be loaded in reverse precedence order (highest precedence first).
+.env files are read manually to extract config values WITHOUT modifying the process environment. this ensures that config values from .env files (like TEST_COMMAND) do NOT become actual environment variables that would be inherited by child processes. .env files are read in precedence order (working dir overrides home dir).
 
 when using a flag parsing library, all short flags are explicitly defined. input and output file arguments are declared as required unless the `--show-config` flag is present.
 
@@ -75,9 +126,9 @@ the full path to the log file is written to the console when the program starts.
 
 detailed logging goes ONLY to the log file, not to the console.
 
-API keys are redacted from the log output.
+API keys are redacted from the log output and replaced with `[REDACTED]`.
 
-the redacted consolidated configuration is logged at the start of each invocation.
+the redacted and consolidated configuration is logged in JSON format at the start of each invocation.
 
 the template expanded prompt is logged.
 
@@ -112,13 +163,15 @@ if the HACKING_CONVENTIONS source file is not present, that section of the promp
 enc searches for resource files (any file under `./res/`) in a specific order:
 
 1. each path (colon separated) provided in the `RESOURCES_PATH` setting. `${XDG_DATA_HOME}` will be expanded to the env variable contents. if it is not set, it will fall back to `$HOME/.local/share`.
-2. ONLY for compiled languages, as a final fallback, macros are used to embed the resource files into the compiled binary and read from memory..
+2. ONLY for compiled languages, as a final fallback, compile-time macros are used to embed the actual resource files into the compiled binary. in Rust, this is done using the `include_str!` macro with relative paths to the actual files (eg. `include_str!("../res/prompt.tmpl")`). these embedded resources are loaded from the actual files at compile time, NOT hardcoded as string literals.
 
 this applies to all files under ./res/ including:
 
 - ./res/languages.json
 - ./res/pricing.json
 - ./res/prompt.tmpl
+
+the embedded fallbacks should reference the actual resource files so that changes to those files are automatically reflected when the program is recompiled.
 
 ## determinism
 
@@ -138,6 +191,8 @@ with the "anthropic" provider, extended thinking can be enabled by including a `
   }
 }
 ```
+
+with "anthropic" provider, `temperature` may only be set to 1 when thinking is enabled.
 
 if the provider returns markdown backtick fencing around the code, it will be removed before being written to the output file. markdown code fences will ONLY be removed from the very first and very last lines of the LLM output. fences with a language name should also be removed.
 
@@ -173,6 +228,10 @@ the `MAX_TOKENS` setting (if explicitly set) is used to override the per-model `
 
 pricing data for language model API calls is shown after the call completes, based on the pricing data in `./res/pricing.json`. costs are accounted by input, output, and thinking costs.
 
+if token cost data is not available, a warning will be printed and the cost data will be elided. this allows the user to use models which are unknown to enc.
+
+if thinking tokens are 0 or not present in the response, the thinking line is omitted from the cost summary output.
+
 if cost per thinking token is not known, they are priced as output tokens.
 
 some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated using the formula: `thinking_tokens = total_tokens - input_tokens - output_tokens`. for anthropic, thinking tokens are calculated by tokenizing the accumulated thinking content from `thinking_delta` events. if no tokenizer is available, thinking tokens will be reported as 0.
@@ -200,9 +259,9 @@ the format of `./res/pricing.json` is as follows:
     },
     // ... and so on ...
 }
+```
 
 any missing fields will be gracefully handled by the parser.
-```
 
 ## code generation
 

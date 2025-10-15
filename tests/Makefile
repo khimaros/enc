@@ -1,4 +1,4 @@
-default: test test-anthropic test-openai test-llama-server
+default: test test-anthropic test-openai
 .PHONY: default
 
 test:
@@ -6,7 +6,7 @@ test:
 .PHONY: test
 
 test-openai:
-	@make -B -C simple PROVIDER=openai MODEL=gpt-5-2025-08-07
+	@make -B -C simple PROVIDER=openai MODEL=gpt-5-nano-2025-08-07
 .PHONY: test-openai
 
 test-anthropic:

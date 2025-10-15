@@ -1,144 +1,100 @@
+../../enc --show-config
+{
+  "anthropic_api_key": "[REDACTED]",
+  "context_files": "",
+  "gemini_api_key": "[REDACTED]",
+  "hacking_conventions": "./HACKING.md",
+  "logs_path": "./log/",
+  "max_tokens": null,
+  "model": "gemini-2.5-flash",
+  "openai_api_base": "",
+  "openai_api_key": "[REDACTED]",
+  "provider": "google",
+  "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
+  "seed": null,
+  "test_command": "",
+  "test_iterations": 3,
+  "thinking_budget": 1024,
+  "timeout": 1800
+}
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20251014_174720.log
+debug log path: ./log/20251118_113506.log
 provider: google, model: gemini-2.5-flash
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 400 input, 434 output, 4407 thinking
+tokens: 411 input, 151 output, 517 thinking
 estimated cost:
-  - input   : $0.000120
-  - output  : $0.001085
-  - thinking: $0.011018
-total: $0.012223
+  - input   : $0.000123
+  - output  : $0.000378
+  - thinking: $0.001293
+total: $0.001793
+python main.py
+the answer to the meaning of life, the universe and everything
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
-  "context_files": [],
+  "context_files": "",
   "gemini_api_key": "[REDACTED]",
   "hacking_conventions": "./HACKING.md",
-  "input_file": "",
   "logs_path": "./log/",
   "max_tokens": null,
-  "model": "gemini-2.5-flash",
-  "openai_api_base": "https://api.openai.com/v1",
+  "model": "claude-sonnet-4-5-20250929",
+  "openai_api_base": "",
   "openai_api_key": "[REDACTED]",
-  "output_file": "",
-  "provider": "google",
-  "resources_path": [
-    "./res/",
-    "${XDG_DATA_HOME}/enc/res/"
-  ],
-  "seed": 602399387419307850,
+  "provider": "anthropic",
+  "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
+  "seed": null,
+  "test_command": "",
+  "test_iterations": 3,
   "thinking_budget": 1024,
-  "timeout": 1800,
-  "user_provided_seed": false
+  "timeout": 1800
 }
-python main.py
-the answer to the meaning of life, the universe and everything
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20251014_174746.log
+debug log path: ./log/20251118_113510.log
 provider: anthropic, model: claude-sonnet-4-5-20250929
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 454 input, 394 output, 0 thinking
+tokens: 466 input, 393 output, 0 thinking
 estimated cost:
-  - input   : $0.001362
-  - output  : $0.005910
-  - thinking: $0.000000
-total: $0.007272
+  - input   : $0.001398
+  - output  : $0.005895
+total: $0.007293
+python main.py
+the answer to the meaning of life, the universe and everything
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
-  "context_files": [],
+  "context_files": "",
   "gemini_api_key": "[REDACTED]",
   "hacking_conventions": "./HACKING.md",
-  "input_file": "",
   "logs_path": "./log/",
   "max_tokens": null,
-  "model": "claude-sonnet-4-5-20250929",
-  "openai_api_base": "https://api.openai.com/v1",
+  "model": "gpt-5-nano-2025-08-07",
+  "openai_api_base": "",
   "openai_api_key": "[REDACTED]",
-  "output_file": "",
-  "provider": "anthropic",
-  "resources_path": [
-    "./res/",
-    "${XDG_DATA_HOME}/enc/res/"
-  ],
-  "seed": 781573956496181598,
+  "provider": "openai",
+  "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
+  "seed": null,
+  "test_command": "",
+  "test_iterations": 3,
   "thinking_budget": 1024,
-  "timeout": 1800,
-  "user_provided_seed": false
+  "timeout": 1800
 }
-python main.py
-the answer to the meaning of life, the universe and everything
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20251014_174753.log
-provider: openai, model: gpt-5-2025-08-07
+debug log path: ./log/20251118_113521.log
+provider: openai, model: gpt-5-nano-2025-08-07
 transpiling 'main.en' to 'main.py' (python)
 successfully transpiled 'main.py'
 
 --- api cost summary ---
-tokens: 389 input, 2684 output, 0 thinking
+tokens: 401 input, 2654 output, 0 thinking
 estimated cost:
-  - input   : $0.000486
-  - output  : $0.026840
-  - thinking: $0.000000
-total: $0.027326
-../../enc --show-config
-{
-  "anthropic_api_key": "[REDACTED]",
-  "context_files": [],
-  "gemini_api_key": "[REDACTED]",
-  "hacking_conventions": "./HACKING.md",
-  "input_file": "",
-  "logs_path": "./log/",
-  "max_tokens": null,
-  "model": "gpt-5-2025-08-07",
-  "openai_api_base": "https://api.openai.com/v1",
-  "openai_api_key": "[REDACTED]",
-  "output_file": "",
-  "provider": "openai",
-  "resources_path": [
-    "./res/",
-    "${XDG_DATA_HOME}/enc/res/"
-  ],
-  "seed": 890845622105509717,
-  "thinking_budget": 1024,
-  "timeout": 1800,
-  "user_provided_seed": false
-}
-python main.py
-the answer to the meaning of life, the universe and everything
-../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20251014_174820.log
-provider: openai, model: gpt-oss-20b
-transpiling 'main.en' to 'main.py' (python)
-successfully transpiled 'main.py'
-../../enc --show-config
-{
-  "anthropic_api_key": "[REDACTED]",
-  "context_files": [],
-  "gemini_api_key": "[REDACTED]",
-  "hacking_conventions": "./HACKING.md",
-  "input_file": "",
-  "logs_path": "./log/",
-  "max_tokens": null,
-  "model": "gpt-oss-20b",
-  "openai_api_base": "http://localhost:7860/v1",
-  "openai_api_key": "[REDACTED]",
-  "output_file": "",
-  "provider": "openai",
-  "resources_path": [
-    "./res/",
-    "${XDG_DATA_HOME}/enc/res/"
-  ],
-  "seed": 2308552243992173959,
-  "thinking_budget": 1024,
-  "timeout": 1800,
-  "user_provided_seed": false
-}
+  - input   : $0.000020
+  - output  : $0.001062
+total: $0.001082
 python main.py
 the answer to the meaning of life, the universe and everything

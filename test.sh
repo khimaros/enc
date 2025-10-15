@@ -31,7 +31,13 @@ target_to_filename() {
 run_target() {
 	local target="$1"
 	log "building target: $target"
-	make -B "$target" 2>&1 | grep -vE '^(make: |make\[)'
+	local output
+	local exit_code
+	output=$(make -B "$target" 2>&1) || exit_code=$?
+	echo "$output" | grep -vE '^(make: |make\[)'
+	if [ "${exit_code:-0}" -ne 0 ]; then
+		return "$exit_code"
+	fi
 }
 
 # all integers and floating point numbers are discarded when comparing to goldens
@@ -102,7 +108,12 @@ run_test() {
 		fi
 
 		log "generating output for '$target' -> '$output_path'"
-		run_target "$target" >"$output_path"
+		if ! run_target "$target" >"$output_path"; then
+			log "ERROR: target '$target' failed with non-zero exit status"
+			cat "$output_path"
+			failed_tests=$((failed_tests + 1))
+			continue
+		fi
 
 		if ! compare_files "$golden_path" "$output_path" "$target"; then
 			failed_tests=$((failed_tests + 1))

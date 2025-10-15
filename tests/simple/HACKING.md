@@ -1,3 +1,3 @@
 # HACKING
 
-add "fnord" comments randomly to the code
+add syntactically valid code comments containing the word "fnord" randomly to all files

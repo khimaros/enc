@@ -345,6 +345,15 @@
         "output_cost_per_token": 6e-07,
         "source": "https://ai.google.dev/gemini-api/docs/models#gemini-2.5-flash-preview"
     },
+    "google/gemini-3-pro-preview": {
+        "input_cost_per_token": 2.0e-06,
+        "input_cost_per_token_above_200k_tokens": 4.0e-06,
+        "max_input_tokens": 1048576,
+        "max_tokens": 65535,
+        "output_cost_per_token": 1.2e-05,
+        "output_cost_per_token_above_200k_tokens": 1.8e-05,
+        "source": "https://cloud.google.com/vertex-ai/generative-ai/pricing"
+    },
     "google/gemini-2.5-pro": {
         "input_cost_per_token": 1.25e-06,
         "input_cost_per_token_above_200k_tokens": 2.5e-06,
