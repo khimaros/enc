@@ -53,7 +53,7 @@ struct Cli {
 
     /// seed used for inference (empty means random)
     #[arg(long, env = "SEED")]
-    seed: Option<u64>,
+    seed: Option<i64>,
 
     /// coding conventions and style guide
     #[arg(long, env = "HACKING_CONVENTIONS", default_value = "./HACKING.md")]
@@ -222,7 +222,7 @@ async fn main() -> Result<()> {
 fn build_config(cli: Cli) -> Result<Config> {
     // ENGLISH DESCRIPTION: the user can provide a seed to request deterministic outputs. if no seed is provided, a random seed is chosen at startup time.
     let user_provided_seed = cli.seed.is_some();
-    let seed = cli.seed.unwrap_or_else(|| rand::thread_rng().gen());
+    let seed = cli.seed.unwrap_or_else(|| rand::thread_rng().gen_range(0..=i64::MAX));
 
     let input_file = cli
         .input_file
@@ -255,7 +255,7 @@ fn build_config(cli: Cli) -> Result<Config> {
         model,
         max_tokens: cli.max_tokens,
         thinking_budget: cli.thinking_budget.unwrap_or(2048),
-        seed,
+        seed: seed.try_into().unwrap(),
         user_provided_seed,
         hacking_conventions,
         timeout: cli.timeout.unwrap_or(1800),
@@ -779,11 +779,18 @@ async fn call_openai_api(
 ) -> Result<(String, ApiUsage)> {
     let url = format!("{}/chat/completions", config.openai_api_base);
 
+    let is_official_openai = config.openai_api_base == "https://api.openai.com/v1";
+    let max_tokens_key = if is_official_openai {
+        "max_completion_tokens"
+    } else {
+        "max_tokens"
+    };
+
     let body = serde_json::json!({
         "model": config.model,
         "messages": [{ "role": "user", "content": prompt }],
         "seed": config.seed,
-        "max_tokens": get_max_tokens(config)?,
+        max_tokens_key: get_max_tokens(config)?,
         "stream": false,
     });
 

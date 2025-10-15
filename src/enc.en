@@ -25,6 +25,8 @@ total: $0.013320
 
 enc can make use of any OpenAI compatible API backend via the `/chat/completions` endpoint. supported models include: gpt-4o-mini, gpt-4.5-preview
 
+when using the official OpenAI API (api.openai.com), the `max_completion_tokens` parameter is used. for all other OpenAI-compatible endpoints (eg. llama.cpp, openrouter), the `max_tokens` parameter is used instead.
+
 enc can make use of the Google Generative AI API backend via the `v1beta/models/{model}:generateContent` endpoint. supported models include: gemini-2.5-pro, gemini-2.5-pro-preview-06-05, gemini-2.5-flash.
 
 enc can make use of the Anthropic Claude API backend via the `/v1/messages` endpoint with streaming support enabled. API calls include the header `anthropic-version: 2023-06-01` and use `"stream": true` for real-time response generation. supported models include: claude-sonnet-4-20250514, claude-3-7-sonnet-20250219, claude-opus-4-1-20250805.
@@ -120,7 +122,7 @@ this applies to all files under ./res/ including:
 
 ## determinism
 
-the user can provide a seed to request deterministic outputs. if no seed is provided, a random seed is chosen at startup time.
+the user can provide a seed to request deterministic outputs. if no seed is provided, a random seed is chosen at startup time. seeds are signed 64-bit integers (i64) to ensure compatibility with OpenAI's API limits.
 
 ## provider workarounds
 

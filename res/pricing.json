@@ -93,9 +93,27 @@
     },
     "anthropic/claude-sonnet-4-20250514": {
         "input_cost_per_token": 3e-06,
-        "max_input_tokens": 200000,
+        "input_cost_per_token_above_200k_tokens": 6e-06,
+        "max_input_tokens": 1000000,
         "max_tokens": 64000,
-        "output_cost_per_token": 1.5e-05
+        "output_cost_per_token": 1.5e-05,
+        "output_cost_per_token_above_200k_tokens": 2.25e-05
+    },
+    "anthropic/claude-sonnet-4-5": {
+        "input_cost_per_token": 3e-06,
+        "input_cost_per_token_above_200k_tokens": 6e-06,
+        "max_input_tokens": 1000000,
+        "max_tokens": 64000,
+        "output_cost_per_token": 1.5e-05,
+        "output_cost_per_token_above_200k_tokens": 2.25e-05
+    },
+    "anthropic/claude-sonnet-4-5-20250929": {
+        "input_cost_per_token": 3e-06,
+        "input_cost_per_token_above_200k_tokens": 6e-06,
+        "max_input_tokens": 1000000,
+        "max_tokens": 64000,
+        "output_cost_per_token": 1.5e-05,
+        "output_cost_per_token_above_200k_tokens": 2.25e-05
     },
     "google/gemini-1.5-flash": {
         "input_cost_per_token": 7.5e-08,
@@ -275,7 +293,7 @@
         "input_cost_per_token": 3e-07,
         "max_input_tokens": 1048576,
         "max_tokens": 65535,
-        "output_cost_per_token": 2.5e-06,
+        "output_cost_per_token": 3e-05,
         "source": "https://ai.google.dev/gemini-api/docs/models#gemini-2.5-flash-preview"
     },
     "google/gemini-2.5-flash-lite": {
@@ -292,6 +310,13 @@
         "output_cost_per_token": 4e-07,
         "source": "https://ai.google.dev/gemini-api/docs/models#gemini-2.5-flash-lite"
     },
+    "google/gemini-2.5-flash-lite-preview-09-2025": {
+        "input_cost_per_token": 1e-07,
+        "max_input_tokens": 1048576,
+        "max_tokens": 65535,
+        "output_cost_per_token": 4e-07,
+        "source": "https://developers.googleblog.com/en/continuing-to-bring-you-our-latest-models-with-an-improved-gemini-2-5-flash-and-flash-lite-release/"
+    },
     "google/gemini-2.5-flash-preview-04-17": {
         "input_cost_per_token": 1.5e-07,
         "max_input_tokens": 1048576,
@@ -305,6 +330,13 @@
         "max_tokens": 65535,
         "output_cost_per_token": 2.5e-06,
         "source": "https://ai.google.dev/gemini-api/docs/models#gemini-2.5-flash-preview"
+    },
+    "google/gemini-2.5-flash-preview-09-2025": {
+        "input_cost_per_token": 3e-07,
+        "max_input_tokens": 1048576,
+        "max_tokens": 65535,
+        "output_cost_per_token": 2.5e-06,
+        "source": "https://developers.googleblog.com/en/continuing-to-bring-you-our-latest-models-with-an-improved-gemini-2-5-flash-and-flash-lite-release/"
     },
     "google/gemini-2.5-flash-preview-tts": {
         "input_cost_per_token": 1.5e-07,
@@ -380,6 +412,20 @@
         "max_tokens": 8192,
         "output_cost_per_token": 0,
         "source": "https://ai.google.dev/pricing"
+    },
+    "google/gemini-flash-latest": {
+        "input_cost_per_token": 3e-07,
+        "max_input_tokens": 1048576,
+        "max_tokens": 65535,
+        "output_cost_per_token": 2.5e-06,
+        "source": "https://developers.googleblog.com/en/continuing-to-bring-you-our-latest-models-with-an-improved-gemini-2-5-flash-and-flash-lite-release/"
+    },
+    "google/gemini-flash-lite-latest": {
+        "input_cost_per_token": 1e-07,
+        "max_input_tokens": 1048576,
+        "max_tokens": 65535,
+        "output_cost_per_token": 4e-07,
+        "source": "https://developers.googleblog.com/en/continuing-to-bring-you-our-latest-models-with-an-improved-gemini-2-5-flash-and-flash-lite-release/"
     },
     "google/gemini-gemma-2-27b-it": {
         "input_cost_per_token": 3.5e-07,
@@ -483,10 +529,10 @@
         "output_cost_per_token": 1.2e-06
     },
     "openai/gpt-3.5-turbo": {
-        "input_cost_per_token": 1.5e-06,
+        "input_cost_per_token": 5e-07,
         "max_input_tokens": 16385,
         "max_tokens": 4097,
-        "output_cost_per_token": 2e-06
+        "output_cost_per_token": 1.5e-06
     },
     "openai/gpt-3.5-turbo-0125": {
         "input_cost_per_token": 5e-07,
@@ -798,51 +844,87 @@
     },
     "openai/gpt-5": {
         "input_cost_per_token": 1.25e-06,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 1e-05
     },
     "openai/gpt-5-2025-08-07": {
         "input_cost_per_token": 1.25e-06,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 1e-05
     },
     "openai/gpt-5-chat": {
         "input_cost_per_token": 1.25e-06,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 1e-05
     },
     "openai/gpt-5-chat-latest": {
         "input_cost_per_token": 1.25e-06,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 128000,
+        "max_tokens": 16384,
+        "output_cost_per_token": 1e-05
+    },
+    "openai/gpt-5-codex": {
+        "input_cost_per_token": 1.25e-06,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 1e-05
     },
     "openai/gpt-5-mini": {
         "input_cost_per_token": 2.5e-07,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 2e-06
     },
     "openai/gpt-5-mini-2025-08-07": {
         "input_cost_per_token": 2.5e-07,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 2e-06
     },
     "openai/gpt-5-nano": {
         "input_cost_per_token": 5e-08,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 4e-07
     },
     "openai/gpt-5-nano-2025-08-07": {
         "input_cost_per_token": 5e-08,
-        "max_input_tokens": 400000,
+        "max_input_tokens": 272000,
         "max_tokens": 128000,
         "output_cost_per_token": 4e-07
+    },
+    "openai/gpt-5-pro": {
+        "input_cost_per_token": 1.5e-05,
+        "max_input_tokens": 400000,
+        "max_tokens": 272000,
+        "output_cost_per_token": 0.00012
+    },
+    "openai/gpt-5-pro-2025-10-06": {
+        "input_cost_per_token": 1.5e-05,
+        "max_input_tokens": 400000,
+        "max_tokens": 272000,
+        "output_cost_per_token": 0.00012
+    },
+    "openai/gpt-realtime": {
+        "input_cost_per_token": 4e-06,
+        "max_input_tokens": 32000,
+        "max_tokens": 4096,
+        "output_cost_per_token": 1.6e-05
+    },
+    "openai/gpt-realtime-2025-08-28": {
+        "input_cost_per_token": 4e-06,
+        "max_input_tokens": 32000,
+        "max_tokens": 4096,
+        "output_cost_per_token": 1.6e-05
+    },
+    "openai/gpt-realtime-mini": {
+        "input_cost_per_token": 6e-07,
+        "max_input_tokens": 128000,
+        "max_tokens": 4096,
+        "output_cost_per_token": 2.4e-06
     },
     "openai/o1": {
         "input_cost_per_token": 1.5e-05,

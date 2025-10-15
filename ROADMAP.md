@@ -8,6 +8,9 @@
 
 [?] split src/enc.en into separate files
 
+[x] automated testing for PROVIDER=openai
+[x] automated testing for PROVIDER=anthropic
+[x] automated testing for llama.cpp server provider
 [x] allow english to english tranpilation (enc main.en -o main.better.en)
 [x] standardize writing style in prompt template
 [x] build ./res/ resources into the rust binary
