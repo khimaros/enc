@@ -134,6 +134,6 @@ such as `make hello-bootstrap` or `make hello-rust`
 
 the bootstrap edition of `enc` was vibe coded with `aider` and `gemini-2.5-pro`
 
-other editions were transpiled from english by `enc` and `gemini-2.5-pro`
+other editions were transpiled from english by `enc` and `gemini-3-pro`
 
-model prices were pulled from [aider](https://github.com/Aider-AI/aider/blob/main/aider/resources/model-metadata.json)
+model prices were pulled from [litellm](https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json)
