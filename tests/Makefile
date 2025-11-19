@@ -10,7 +10,7 @@ test-openai:
 .PHONY: test-openai
 
 test-anthropic:
-	@make -B -C simple PROVIDER=anthropic MODEL=claude-sonnet-4-5-20250929
+	@make -B -C simple PROVIDER=anthropic MODEL=claude-haiku-4-5-20251001
 .PHONY: test-anthropic
 
 test-llama-server:

@@ -5,21 +5,36 @@ enc is a program that can be used to transpile any english language file (eg. "h
 ## example usage
 
 ```console
-$ enc ./examples/hello.en -o ./examples/hello.rs
+$ enc ./examples/hello.en -o ./examples/hello.c --test-command "make test"
 
 debug log path: ./log/20250624_173200.log
-provider: google, model: gemini-2.5-pro
-transpiling './examples/hello.en' to './examples/hello.rs' (rust)
-successfully transpiled './examples/hello.rs'
+transpiling './examples/hello.en' to './examples/hello.c' (c)
+calling api (provider: google, model: gemini-2.5-pro)...
+api call completed with response code 200 after 1.75s
+executing test command (`make test`), attempt 1/5
+test command failed, see log for details
+calling api (provider: google, model: gemini-2.5-pro)...
+api call completed with response code 200 after 3.25s
+executing test command (`make test`), attempt 2/5
+test command succeeded!
+successfully transpiled './examples/hello.c'
 
---- api cost summary ---
-tokens: 422 input, 139 output, 1095 thinking
+--- api request summary ---
+tokens: 1272 input, 243 output
 estimated cost:
-  - input   : $0.000590
-  - output  : $0.001780
-  - thinking: $0.010950
-total: $0.013320
+  - input : $0.001590
+  - output: $0.002430
+total: $0.004020
+elapsed time: 5.00s
 ```
+
+the command-line interface MUST follow this exact pattern where the input file is a positional argument:
+
+```
+enc <INPUT_FILE> -o <OUTPUT_FILE> [OPTIONS]
+```
+
+the input file is the first positional argument, NOT a flag. the output file is specified via the `-o` or `--output` flag.
 
 ## providers
 
@@ -53,7 +68,7 @@ enc uses a layered configuration. settings are sourced with the following preced
 
 configuration from sources with higher precedence override values from sources with lower precedence.
 
-the "consolidated configuration" is what results from processing all layered configuration sources. the "redacted configuration" is what results from filtering API keys from the consolidated configuration.
+the "consolidated configuration" is the FINAL merged result from processing all layered configuration sources (flags > env > .enc.env > ~/.enc.env > hardcoded defaults). this is the configuration that the program actually uses at runtime. the "redacted configuration" is what results from filtering API keys from the consolidated configuration. the --show-config output shows the consolidated configuration with redactions applied.
 
 EVERY configuration setting is also available as command line flag.
 
@@ -72,8 +87,6 @@ when test commands are executed, the relevant status line is written to the cons
 ```
 executing test command (`make test`), attempt 1/5
 test command failed, see log for details
-executing test command (`make test`), attempt 2/5
-test command succeeded!
 ```
 
 if the test command exits with a non-zero status code, enc will:
@@ -96,9 +109,36 @@ on each retry iteration, the LLM receives:
 
 this allows the LLM to iteratively fix issues based on actual test failures.
 
-if (and only if) API calls are made, the total API cost across all iterations is accumulated and displayed at the end of the invocation.
+## api reporting
 
-if tests still fail after reaching `TEST_ITERATIONS`, enc exits with code 1.
+before each API call is made, a status line is written to the console in the format:
+
+```
+calling api (provider: <provider>, model: <model>)...
+```
+
+after each API call completes, response code and call time are written:
+
+```
+api call completed with response code 200 after 1.75s
+```
+
+no per-call token or cost summary is displayed. at the end of the invocation (after all iterations and test commands complete), a final accumulated summary is displayed showing totals across all API calls with an empty line before it:
+
+```
+--- api request summary ---
+tokens: X input, Y output[, Z thinking]
+estimated cost:
+  - input: $A.BBBBBB
+  - output: $C.DDDDDD
+  [- thinking: $E.FFFFFF]
+total: $G.HHHHHH
+elapsed time: I.JJs
+```
+
+the total API cost summary is displayed regardless of whether test commands succeed or fail.
+
+if tests still fail after reaching `TEST_ITERATIONS`, enc exits with code 1 after displaying the total API cost summary.
 
 if an error occurs during any iteration (eg. API error, network failure), the error is printed to the console along with the accumulated API cost summary before exiting.
 
@@ -112,11 +152,55 @@ when no model is explicitly specified, enc uses provider-specific defaults:
 
 when the `--show-config` flag is provided, enc FIRST loads all sources of configuration and then writes the redacted config to the console in JSON format. the program exits immediately after the configuration has been written. the config keys should be lexically sorted when output.
 
+fields are omitted or redacted from --show-config output based on these rules:
+
+1. numeric fields (max_tokens, seed, thinking_budget): omit if not explicitly set by any configuration source
+2. string fields (hacking_conventions, context_files, openai_api_base, test_command): omit ONLY if the consolidated value equals the empty string ("")
+3. API key fields: MUST be included with value "[REDACTED]" (never show actual keys, never omit the field)
+
+CRITICAL: for string fields, the decision to include/omit is based SOLELY on whether the final consolidated value is "" (empty string) or non-empty. the source of the value (command line, env var, config file, or hardcoded default) is irrelevant. if the consolidated configuration contains hacking_conventions = "./HACKING.md", it MUST appear in --show-config output, regardless of where that value came from.
+
+hardcoded defaults (from .enc.env.example) ARE part of the consolidated configuration. for example, the hardcoded default for hacking_conventions is "./HACKING.md" (not ""). therefore, if hacking_conventions is not set in flags, env vars, or .enc.env files, the consolidated value will be "./HACKING.md" and it MUST appear in --show-config output. the only way for hacking_conventions to be omitted from --show-config is if it is explicitly set to "" by a higher-precedence configuration source.
+
+### --show-config examples
+
+example 1: if hacking_conventions is NOT set in flags, env vars, or .enc.env files (uses hardcoded default "./HACKING.md"), the output MUST include:
+```json
+{
+  "hacking_conventions": "./HACKING.md",
+  ...
+}
+```
+
+example 2: if hacking_conventions is explicitly set to "" (empty string) via flag, env var, or .enc.env, the output MUST NOT include that field:
+```json
+{
+  ...
+  (no hacking_conventions field)
+}
+```
+
+example 3: if max_tokens is explicitly set to 8192, include it. if not explicitly set, omit it:
+```json
+{
+  "max_tokens": 8192,
+  ...
+}
+```
+
 ## library workarounds
 
 .env files are read manually to extract config values WITHOUT modifying the process environment. this ensures that config values from .env files (like TEST_COMMAND) do NOT become actual environment variables that would be inherited by child processes. .env files are read in precedence order (working dir overrides home dir).
 
-when using a flag parsing library, all short flags are explicitly defined. input and output file arguments are declared as required unless the `--show-config` flag is present.
+when using a flag parsing library, all short flags are explicitly defined.
+
+the command-line interface follows this pattern: `enc <INPUT_FILE> -o <OUTPUT_FILE> [OPTIONS]`
+
+- INPUT_FILE is a required POSITIONAL argument (the first positional arg, not a flag)
+- OUTPUT_FILE is provided via the `-o`/`--output` FLAG
+- both are required unless `--show-config` is present
+
+the `--show-config` flag MUST NOT require input_file or output_file arguments.
 
 ## logging
 
@@ -157,6 +241,8 @@ template expansion is done ONCE as a SINGLE PASS to ensure that template formatt
 if the target format is a derivative of XML (eg. SVG), enc will strip all double-hyphens (`--`) from `generation_command` before expanding that variable in the prompt. for example, `--show-config` would become `show-config`.
 
 if the HACKING_CONVENTIONS source file is not present, that section of the prompt will be empty, and the program will continue without error.
+
+when a configuration value is loaded from ANY source (including .env files and hardcoded defaults), and that value is non-empty for strings or explicitly set for numeric fields, it MUST be included in both the consolidated configuration and the --show-config output. this requirement is tested by the test suite which expects specific fields to appear in --show-config output based on the consolidated configuration values.
 
 ## resources
 
@@ -226,15 +312,28 @@ most models have token limits. if available, they are found in `./res/pricing.js
 
 the `MAX_TOKENS` setting (if explicitly set) is used to override the per-model `max_tokens` from `./res/pricing.json`. this value is passed directly to the provider, and may result in an error if it exceeds a model's context window limit.
 
-pricing data for language model API calls is shown after the call completes, based on the pricing data in `./res/pricing.json`. costs are accounted by input, output, and thinking costs.
+pricing data for language model API calls is shown after each individual call completes, based on the pricing data in `./res/pricing.json`. costs are accounted by input, output, and thinking costs. at the end of the invocation, accumulated totals across all API calls are displayed.
+
+the time spent in each LLM API call is tracked and displayed in the per-call summary. the total time across all calls is accumulated and displayed in the final cost summary. call time measures the elapsed time from when the request is sent until the response is fully received. the time is displayed in seconds with two decimal places (e.g., "3.45s").
 
 if token cost data is not available, a warning will be printed and the cost data will be elided. this allows the user to use models which are unknown to enc.
 
-if thinking tokens are 0 or not present in the response, the thinking line is omitted from the cost summary output.
+if thinking tokens are 0 or not present in the response, thinking tokens are omitted from BOTH the tokens summary line AND the cost breakdown. for example, if thinking tokens are 0, the output should be "tokens: X input, Y output" (without mentioning thinking), and the cost breakdown should not include a "- thinking: $Z" line.
 
 if cost per thinking token is not known, they are priced as output tokens.
 
-some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated using the formula: `thinking_tokens = total_tokens - input_tokens - output_tokens`. for anthropic, thinking tokens are calculated by tokenizing the accumulated thinking content from `thinking_delta` events. if no tokenizer is available, thinking tokens will be reported as 0.
+some providers don't supply thinking token counts in the LLM response. in these cases, thinking token counts will be calculated using the formula: `thinking_tokens = total_tokens - input_tokens - output_tokens`.
+
+for the "google" provider, thinking tokens may be included in the response metadata (e.g., in usageMetadata as a separate field). if present, extract them from the response. if total_tokens is provided but thinking_tokens is not, calculate thinking tokens using the formula above.
+
+for the "anthropic" provider with streaming, thinking tokens are NOT included in the usage metadata. if thinking content was received via `thinking_delta` events, the thinking token count should be estimated by counting tokens in the accumulated thinking content. a simple heuristic is to use character count divided by 4 (approximately 4 characters per token for English text). if no thinking content was received, thinking tokens will be reported as 0.
+
+for the "openai" provider and openai-compatible endpoints, thinking tokens are typically included in the response usage object if the model supports extended thinking. check for thinking tokens in the following order:
+1. `usage.completion_tokens_details.reasoning_tokens` (newer models like o1, o3-mini)
+2. `usage.reasoning_tokens` (direct field)
+3. `usage.thinking_tokens` (alternate field name)
+4. fallback: calculate using `total_tokens - prompt_tokens - completion_tokens` if total_tokens is provided
+if none of these are present or all are 0, report thinking tokens as 0.
 
 the format of `./res/pricing.json` is as follows:
 
@@ -269,8 +368,25 @@ the target language name is loaded from `./res/languages.json`. that resource fi
 
 the key is the file extension or base file name of the output file. for files without extensions (eg. Makefile), the base name is used as the key.
 
-if the target language is not found in the map, the key used for the lookup (the file extension, or the file base name if no extension is present) is passed to the LLM at inference time.
+if the target language is not found in the map, the key used for the lookup (the file extension, or the file base name if no extension is present) is used as the language name for BOTH the template variable AND the console output.
+
+the LLM MUST return ONLY valid source code in the target language. the response MUST NOT include:
+- explanatory text or commentary before/after the code
+- markdown formatting (except code fences on first/last lines only, which will be stripped)
+- numbered lists or prose descriptions
+- review comments or suggestions
+
+the ENTIRE response should be compilable/executable code in the target language.
+
+## output validation
+
+before writing the generated code to the output file, enc performs the following validations:
+
+- strip ONLY first/last line markdown code fences (```language or ```)
+- check that the response is non-empty after stripping fences
+
+if validation fails, treat it as an error and retry if iterations remain.
 
 ## security
 
-API keys and absolute paths are ALWAYS omitted or redacted from output to the console, to the LLM, or to logs. this requirement covers `--help` and `--show-config` output.
+API keys are ALWAYS redacted to "[REDACTED]" in all output (console, LLM prompts, logs, --show-config). absolute paths are redacted when shown to the LLM or in console help output.

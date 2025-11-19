@@ -1,100 +1,93 @@
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
-  "context_files": "",
   "gemini_api_key": "[REDACTED]",
   "hacking_conventions": "./HACKING.md",
   "logs_path": "./log/",
-  "max_tokens": null,
   "model": "gemini-2.5-flash",
-  "openai_api_base": "",
   "openai_api_key": "[REDACTED]",
   "provider": "google",
   "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
-  "seed": null,
-  "test_command": "",
   "test_iterations": 3,
   "thinking_budget": 1024,
   "timeout": 1800
 }
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20251118_113506.log
-provider: google, model: gemini-2.5-flash
+debug log path: ./log/20251119_152804.log
 transpiling 'main.en' to 'main.py' (python)
+calling api (provider: google, model: gemini-2.5-flash)...
+api call completed with response code 200 after 2.27s
 successfully transpiled 'main.py'
 
---- api cost summary ---
-tokens: 411 input, 151 output, 517 thinking
+--- api request summary ---
+tokens: 411 input, 154 output, 214 thinking
 estimated cost:
-  - input   : $0.000123
-  - output  : $0.000378
-  - thinking: $0.001293
-total: $0.001793
+  - input: $0.000123
+  - output: $0.000385
+  - thinking: $0.000535
+total: $0.001043
+elapsed time: 2.27s
 python main.py
 the answer to the meaning of life, the universe and everything
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
-  "context_files": "",
   "gemini_api_key": "[REDACTED]",
   "hacking_conventions": "./HACKING.md",
   "logs_path": "./log/",
-  "max_tokens": null,
-  "model": "claude-sonnet-4-5-20250929",
-  "openai_api_base": "",
+  "model": "claude-haiku-4-5-20251001",
   "openai_api_key": "[REDACTED]",
   "provider": "anthropic",
   "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
-  "seed": null,
-  "test_command": "",
   "test_iterations": 3,
   "thinking_budget": 1024,
   "timeout": 1800
 }
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20251118_113510.log
-provider: anthropic, model: claude-sonnet-4-5-20250929
+debug log path: ./log/20251119_152806.log
 transpiling 'main.en' to 'main.py' (python)
+calling api (provider: anthropic, model: claude-haiku-4-5-20251001)...
+api call completed with response code 200 after 8.75s
 successfully transpiled 'main.py'
 
---- api cost summary ---
-tokens: 466 input, 393 output, 0 thinking
+--- api request summary ---
+tokens: 466 input, 643 output, 670 thinking
 estimated cost:
-  - input   : $0.001398
-  - output  : $0.005895
-total: $0.007293
+  - input: $0.000466
+  - output: $0.003215
+  - thinking: $0.003350
+total: $0.007031
+elapsed time: 8.75s
 python main.py
 the answer to the meaning of life, the universe and everything
 ../../enc --show-config
 {
   "anthropic_api_key": "[REDACTED]",
-  "context_files": "",
   "gemini_api_key": "[REDACTED]",
   "hacking_conventions": "./HACKING.md",
   "logs_path": "./log/",
-  "max_tokens": null,
   "model": "gpt-5-nano-2025-08-07",
-  "openai_api_base": "",
   "openai_api_key": "[REDACTED]",
   "provider": "openai",
   "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
-  "seed": null,
-  "test_command": "",
   "test_iterations": 3,
   "thinking_budget": 1024,
   "timeout": 1800
 }
 ../../enc "main.en" -o "main.py" --context-files context.txt
-debug log path: ./log/20251118_113521.log
-provider: openai, model: gpt-5-nano-2025-08-07
+debug log path: ./log/20251119_152815.log
 transpiling 'main.en' to 'main.py' (python)
+calling api (provider: openai, model: gpt-5-nano-2025-08-07)...
+api call completed with response code 200 after 22.30s
 successfully transpiled 'main.py'
 
---- api cost summary ---
-tokens: 401 input, 2654 output, 0 thinking
+--- api request summary ---
+tokens: 401 input, 2777 output, 2624 thinking
 estimated cost:
-  - input   : $0.000020
-  - output  : $0.001062
-total: $0.001082
+  - input: $0.000020
+  - output: $0.001111
+  - thinking: $0.001050
+total: $0.002180
+elapsed time: 22.30s
 python main.py
 the answer to the meaning of life, the universe and everything
