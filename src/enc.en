@@ -98,7 +98,7 @@ if the test command exits with a non-zero status code, enc will:
 this loop continues until either:
 
 - the test command succeeds (exits with code 0), or
-- `TEST_ITERATIONS` is reached
+- `TEST_ITERATIONS` is reached (if `TEST_ITERATIONS` is -1, retry forever)
 
 on each retry iteration, the LLM receives:
 

@@ -2,6 +2,8 @@ BOOTSTRAP_FLAGS := --context-files ./.enc.env.example
 
 BOOTSTRAP_DEPS := ./.enc.env.example ./res/pricing.json ./res/languages.json
 
+ENC := ./enc-release
+
 default: build
 .PHONY: default
 
@@ -20,8 +22,11 @@ install-resources:
 	install ./res/languages.json ${XDG_DATA_HOME}/enc/res/languages.json
 .PHONY: install-resources
 
+bootstrap-deps: $(BOOTSTRAP_DEPS)
+.PHONY: bootstrap-deps
+
 res/languages.json: res/languages.en
-	./enc-release "$<" -o "$@"
+	$(ENC) "$<" -o "$@"
 
 uninstall:
 	rm -fv "${HOME}/.local/bin/enc"
@@ -55,14 +60,14 @@ transpile-rust: src/main.rs
 .PHONY: transpile-rust
 
 transpile-rust-grounded: src/enc.en $(BOOTSTRAP_DEPS)
-	./enc-release  "$<" -o "src/main.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml:./src/main.rs
+	$(ENC)  "$<" -o "src/main.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml:./src/main.rs
 .PHONY: transpile-rust-grounded
 
 transpile-python: src/enc.py
 .PHONY: transpile-python
 
 src/enc.py: src/enc.en $(BOOTSTRAP_DEPS)
-	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./requirements.txt
+	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):./requirements.txt
 
 build-rust: target/debug/enc
 .PHONY: build-rust
@@ -74,13 +79,13 @@ enc-cpp: src/enc.cpp
 	g++ -std=c++20 "$<" -o "$@" -lcpr
 
 src/enc.cpp: src/enc.en CMakeLists.txt $(BOOTSTRAP_DEPS)
-	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):CMakeLists.txt
+	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):CMakeLists.txt
 
 src/main.rs: src/enc.en $(BOOTSTRAP_DEPS)
-	TEST_COMMAND="make test" ./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
+	TEST_COMMAND="make test" $(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
 
 src/main.hs: src/enc.en $(BOOTSTRAP_DEPS)
-	./enc-release "$<" -o "$@" $(BOOTSTRAP_FLAGS)
+	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS)
 
 bootstrap-python: src/enc.en $(BOOTSTRAP_DEPS)
 	./src/enc.bootstrap.py "$<" -o "src/enc.py" $(BOOTSTRAP_FLAGS):./requirements.txt
@@ -131,7 +136,7 @@ tests-release:
 .PHONY: tests-release
 
 test.sh: test.en
-	./enc-release "$<" -o "$@" --context-files Makefile
+	$(ENC) "$<" -o "$@" --context-files Makefile
 
 format: format-python
 .PHONY: format
@@ -199,7 +204,7 @@ scripts: scripts/pricing.py
 .PHONY: scripts
 
 scripts/pricing.py: scripts/pricing.en
-	./enc-release "$<" -o "$@" --context-files ./res/pricing.json:requirements.txt
+	$(ENC) "$<" -o "$@" --context-files ./res/pricing.json:requirements.txt
 
 docs: doc/icon.png doc/booklet.md doc/enc.cast.gif
 .PHONY: docs
@@ -211,10 +216,10 @@ doc/icon.svg: doc/icon.en
 	./enc "$<" -o "$@" --context-files README.md:src/enc.en
 
 doc/pitch.md: doc/pitch.en src/enc.en
-	./enc-release "$<" -o "$@" --context-files src/enc.en
+	$(ENC) "$<" -o "$@" --context-files src/enc.en
 
 doc/booklet.md: doc/booklet.en .enc.env.example Makefile README.md src/enc.en examples/multi/README.md examples/parasite/README.md examples/balloons/README.md examples/web/README.md
-	./enc-release "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md --provider=google --model=gemini-2.5-flash
+	$(ENC) "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md --provider=google --model=gemini-2.5-flash
 
 doc/CAST.md:
 	echo "# CAST" > "$@"

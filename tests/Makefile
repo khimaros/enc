@@ -1,21 +1,25 @@
-default: test test-anthropic test-openai
+default: test-google test-anthropic test-openai
 .PHONY: default
 
 test:
 	@make -B -C simple
 .PHONY: test
 
+test-google:
+	@make -B -C simple PROVIDER=google MODEL=gemini-2.5-flash
+.PHONY: test-google
+
 test-openai:
-	@make -B -C simple PROVIDER=openai MODEL=gpt-5-nano-2025-08-07
+	@make -B -C simple PROVIDER=openai OPENAI_API_BASE=https://api.openai.com/v1 MODEL=gpt-5-nano-2025-08-07
 .PHONY: test-openai
 
 test-anthropic:
 	@make -B -C simple PROVIDER=anthropic MODEL=claude-haiku-4-5-20251001
 .PHONY: test-anthropic
 
-test-llama-server:
-	@make -B -C simple PROVIDER=openai MODEL=gpt-oss-20b OPENAI_API_BASE="http://localhost:7860/v1" OPENAI_API_KEY="fake"
-.PHONY: test-llama-server
+test-custom:
+	@make -B -C simple PROVIDER=openai MODEL=gpt-oss-20b:Q8_0 OPENAI_API_KEY="fake" OPENAI_API_BASE=http://kairos:7860/v1
+.PHONY: test-custom
 
 test-release:
 	@make -B -C simple ENC_EDITION=enc-release
