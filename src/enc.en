@@ -9,23 +9,24 @@ $ enc ./examples/hello.en -o ./examples/hello.c --test-command "make test"
 
 debug log path: ./log/20250624_173200.log
 transpiling './examples/hello.en' to './examples/hello.c' (c)
-calling api (provider: google, model: gemini-2.5-pro)...
+calling api (provider: google, model: gemini-3-flash-preview)...
 api call completed with response code 200 after 1.75s
 executing test command (`make test`), attempt 1/5
 test command failed, see log for details
-calling api (provider: google, model: gemini-2.5-pro)...
+calling api (provider: google, model: gemini-3-flash-preview)...
 api call completed with response code 200 after 3.25s
 executing test command (`make test`), attempt 2/5
 test command succeeded!
 successfully transpiled './examples/hello.c'
 
 --- api request summary ---
-tokens: 1272 input, 243 output
+tokens: 411 input, 167 output, 1611 thinking
 estimated cost:
-  - input : $0.001590
-  - output: $0.002430
-total: $0.004020
-elapsed time: 5.00s
+  - input: $0.000205
+  - output: $0.000501
+  - thinking: $0.004833
+total: $0.005540
+elapsed time: 10.06s
 ```
 
 the command-line interface MUST follow this exact pattern where the input file is a positional argument:
@@ -38,7 +39,7 @@ the input file is the first positional argument, NOT a flag. the output file is 
 
 ## providers
 
-enc can make use of any OpenAI compatible API backend via the `/chat/completions` endpoint. supported models include: gpt-4o-mini, gpt-4.5-preview
+enc can make use of any OpenAI compatible API backend via the `/chat/completions` endpoint. by default, the OpenAI API base is set to `https://api.openai.com/v1`. supported models include: gpt-4o-mini, gpt-4.5-preview
 
 when using the official OpenAI API (api.openai.com), the `max_completion_tokens` parameter is used. for all other OpenAI-compatible endpoints (eg. llama.cpp, openrouter), the `max_tokens` parameter is used instead.
 
@@ -123,7 +124,7 @@ after each API call completes, response code and call time are written:
 api call completed with response code 200 after 1.75s
 ```
 
-no per-call token or cost summary is displayed. at the end of the invocation (after all iterations and test commands complete), a final accumulated summary is displayed showing totals across all API calls with an empty line before it:
+no per-call token or cost summary is displayed. if the transpilation is successful, the 'successfully transpiled' message is printed. at the end of the invocation (after all iterations and test commands complete), a final accumulated summary is displayed showing totals across all API calls with an empty line before it. if 'successfully transpiled' was printed, the empty line should appear between it and the summary.
 
 ```
 --- api request summary ---
@@ -160,7 +161,7 @@ fields are omitted or redacted from --show-config output based on these rules:
 
 CRITICAL: for string fields, the decision to include/omit is based SOLELY on whether the final consolidated value is "" (empty string) or non-empty. the source of the value (command line, env var, config file, or hardcoded default) is irrelevant. if the consolidated configuration contains hacking_conventions = "./HACKING.md", it MUST appear in --show-config output, regardless of where that value came from.
 
-hardcoded defaults (from .enc.env.example) ARE part of the consolidated configuration. for example, the hardcoded default for hacking_conventions is "./HACKING.md" (not ""). therefore, if hacking_conventions is not set in flags, env vars, or .enc.env files, the consolidated value will be "./HACKING.md" and it MUST appear in --show-config output. the only way for hacking_conventions to be omitted from --show-config is if it is explicitly set to "" by a higher-precedence configuration source.
+hardcoded defaults (from .enc.env.example) ARE part of the consolidated configuration. for example, the hardcoded default for hacking_conventions is "./HACKING.md" (not "") and the default for openai_api_base is "https://api.openai.com/v1". therefore, if these settings are not set in flags, env vars, or .enc.env files, the consolidated values will be those defaults and they MUST appear in --show-config output. the only way for these fields to be omitted from --show-config is if they are explicitly set to "" by a higher-precedence configuration source.
 
 ### --show-config examples
 
@@ -278,7 +279,7 @@ with the "anthropic" provider, extended thinking can be enabled by including a `
 }
 ```
 
-with "anthropic" provider, `temperature` may only be set to 1 when thinking is enabled.
+with "anthropic" provider, `temperature` may only be set to 1 when thinking is enabled. additionally, when thinking is enabled, `max_tokens` MUST be greater than `thinking_budget` or the API will return an error.
 
 if the provider returns markdown backtick fencing around the code, it will be removed before being written to the output file. markdown code fences will ONLY be removed from the very first and very last lines of the LLM output. fences with a language name should also be removed.
 
@@ -290,21 +291,25 @@ a similar pattern is required for the "anthropic" provider which can contain mul
 
 enc uses server-sent events (SSE) streaming for real-time response generation with the anthropic provider. the streaming implementation handles the following event types:
 
-- `message_start`: contains initial message metadata and input token count
-- `content_block_start`: signals the start of a new content block (text, tool_use, or thinking)
+- `message_start`: contains initial message metadata and input token count. the message id is logged.
+- `content_block_start`: signals the start of a new content block (text, tool_use, or thinking). the block type is logged.
 - `content_block_delta`: contains incremental content updates with the following delta types:
   - `text_delta`: incremental text content that is immediately displayed to the user
   - `thinking_delta`: incremental thinking content that is logged but not displayed
   - `signature_delta`: cryptographic signature for thinking block verification
 - `content_block_stop`: signals the end of a content block
-- `message_delta`: contains final message metadata and output token counts
+- `message_delta`: contains final message metadata and output token counts. the `stop_reason` is logged.
 - `message_stop`: signals the end of the streaming response
 - `ping`: keepalive events that are ignored
-- `error`: error events that should be handled gracefully
+- `error`: error events that cause enc to return an error. the error message is logged.
+
+the streaming implementation logs the HTTP status and the `request-id` header for every request. if the HTTP status is NOT a success (2xx), the full response body is logged and the program returns an error.
 
 the streaming parser uses line buffering to handle partial SSE events and accumulates text deltas for the final response. the parser ignores empty lines and lines starting with ':' (SSE comment events). thinking content and signatures are logged for debugging but not included in the final output.
 
 streaming accumulates the complete response internally without displaying partial output to the user, then writes the final result to the output file.
+
+the final response length is logged. if both the accumulated text and thinking content are empty after the stream completes, a warning is logged.
 
 ## token budgets
 

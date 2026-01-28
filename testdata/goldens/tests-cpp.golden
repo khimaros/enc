@@ -1,0 +1,105 @@
+../../enc-cpp --show-config
+{
+  "anthropic_api_key": "[REDACTED]",
+  "gemini_api_key": "[REDACTED]",
+  "hacking_conventions": "./HACKING.md",
+  "logs_path": "./log/",
+  "model": "gemini-3-flash-preview",
+  "openai_api_base": "https://api.openai.com/v1",
+  "openai_api_key": "[REDACTED]",
+  "provider": "google",
+  "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
+  "test_command": "./test.sh",
+  "test_iterations": 1,
+  "thinking_budget": 1024,
+  "timeout": 1800
+}
+../../enc-cpp "main.en" -o "main.py" --context-files context.txt
+debug log path: ./log/20260128_131910.log
+transpiling 'main.en' to 'main.py' (python)
+calling api (provider: google, model: gemini-3-flash-preview)...
+api call completed with response code 200 after 14.09s
+executing test command (`./test.sh`), attempt 1/1
+test command succeeded!
+successfully transpiled 'main.py'
+
+--- api request summary ---
+tokens: 414 input, 182 output, 1719 thinking
+estimated cost:
+  - input: $0.000207
+  - output: $0.000546
+  - thinking: $0.005157
+total: $0.005910
+elapsed time: 14.12s
+python main.py
+the answer to the meaning of life, the universe and everything
+../../enc-cpp --show-config
+{
+  "anthropic_api_key": "[REDACTED]",
+  "gemini_api_key": "[REDACTED]",
+  "hacking_conventions": "./HACKING.md",
+  "logs_path": "./log/",
+  "model": "claude-haiku-4-5-20251001",
+  "openai_api_base": "https://api.openai.com/v1",
+  "openai_api_key": "[REDACTED]",
+  "provider": "anthropic",
+  "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
+  "test_command": "./test.sh",
+  "test_iterations": 1,
+  "thinking_budget": 1024,
+  "timeout": 1800
+}
+../../enc-cpp "main.en" -o "main.py" --context-files context.txt
+debug log path: ./log/20260128_131924.log
+transpiling 'main.en' to 'main.py' (python)
+calling api (provider: anthropic, model: claude-haiku-4-5-20251001)...
+api call completed with response code 200 after 4.01s
+executing test command (`./test.sh`), attempt 1/1
+test command succeeded!
+successfully transpiled 'main.py'
+
+--- api request summary ---
+tokens: 469 input, 186 output, 424 thinking
+estimated cost:
+  - input: $0.000469
+  - output: $0.000930
+  - thinking: $0.002120
+total: $0.003519
+elapsed time: 4.04s
+python main.py
+the answer to the meaning of life, the universe and everything
+../../enc-cpp --show-config
+{
+  "anthropic_api_key": "[REDACTED]",
+  "gemini_api_key": "[REDACTED]",
+  "hacking_conventions": "./HACKING.md",
+  "logs_path": "./log/",
+  "model": "gpt-5-nano-2025-08-07",
+  "openai_api_base": "https://api.openai.com/v1",
+  "openai_api_key": "[REDACTED]",
+  "provider": "openai",
+  "resources_path": "./res/:${XDG_DATA_HOME}/enc/res/",
+  "test_command": "./test.sh",
+  "test_iterations": 1,
+  "thinking_budget": 1024,
+  "timeout": 1800
+}
+../../enc-cpp "main.en" -o "main.py" --context-files context.txt
+debug log path: ./log/20260128_131928.log
+transpiling 'main.en' to 'main.py' (python)
+calling api (provider: openai, model: gpt-5-nano-2025-08-07)...
+api call completed with response code 200 after 21.31s
+executing test command (`./test.sh`), attempt 1/1
+test command succeeded!
+successfully transpiled 'main.py'
+
+--- api request summary ---
+tokens: 403 input, 158 output, 2048 thinking
+estimated cost:
+  - input: $0.000020
+  - output: $0.000063
+  - thinking: $0.000819
+total: $0.000903
+elapsed time: 21.33s
+python main.py
+the answer to the meaning of life, the universe and everything

@@ -2,18 +2,31 @@ BOOTSTRAP_FLAGS := --context-files ./.enc.env.example
 
 BOOTSTRAP_DEPS := ./.enc.env.example ./res/pricing.json ./res/languages.json
 
-ENC := ./enc-release
+ENC ?= ./enc-release
 
-default: build
+TEST_ITERATIONS ?= 5
+
+###############
+### INSTALL ###
+###############
+
+default: build-release
 .PHONY: default
 
-install: build
-	install ./target/debug/enc ${HOME}/.local/bin/enc
+install: install-rust-release
 .PHONY: install
 
-install-python: install-resources
+install-rust-release: build-rust-release
+	install ./target/release/enc ${HOME}/.local/bin/enc
+.PHONY: install-rust-release
+
+install-python: build-python install-resources
 	install ./src/enc.py ${HOME}/.local/bin/enc
 .PHONY: install-python
+
+install-cpp: build-cpp install-resources
+	install ./build/enc-cpp ${HOME}/.local/bin/enc
+.PHONY: install-cpp
 
 install-resources:
 	install -d ./res/ ${XDG_DATA_HOME}/enc/res/
@@ -22,106 +35,168 @@ install-resources:
 	install ./res/languages.json ${XDG_DATA_HOME}/enc/res/languages.json
 .PHONY: install-resources
 
-bootstrap-deps: $(BOOTSTRAP_DEPS)
-.PHONY: bootstrap-deps
-
-res/languages.json: res/languages.en
-	$(ENC) "$<" -o "$@"
-
 uninstall:
 	rm -fv "${HOME}/.local/bin/enc"
 	rm -rfv "${XDG_DATA_HOME}/enc/"
 .PHONY: uninstall
 
-release: build-release
-.PHONY: release
+#############
+### BUILD ###
+#############
 
-build-release: build-release-rust
-.PHONY: build-release
-
-build-release-rust: transpile-rust
-	cargo build --release
-	cd target/release/ && ln -sf enc enc-linux-x64
-.PHONY: build-release-rust
-
-create: create-rust
-.PHONY: create
-
-create-rust: transpile-rust build-rust
-.PHONY: create-rust
-
-build: build-rust
+build: build-rust build-cpp build-python build-typescript
 .PHONY: build
 
-transpile: transpile-python transpile-rust test.sh scripts/pricing.py
-.PHONY: transpile
-
-transpile-rust: src/main.rs
-.PHONY: transpile-rust
-
-transpile-rust-grounded: src/enc.en $(BOOTSTRAP_DEPS)
-	$(ENC)  "$<" -o "src/main.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml:./src/main.rs
-.PHONY: transpile-rust-grounded
-
-transpile-python: src/enc.py
-.PHONY: transpile-python
-
-src/enc.py: src/enc.en $(BOOTSTRAP_DEPS)
-	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):./requirements.txt
+build-release: build-rust-release
+.PHONY: build-release
 
 build-rust: target/debug/enc
 .PHONY: build-rust
 
-target/debug/enc: src/main.rs
+build-rust-release: target/release/enc
+.PHONY: build-rust-release
+
+build-python: build/python.state
+.PHONY: build-python
+
+build/python.state: src/enc.py
+	chmod +x src/enc.py
+	python -m py_compile src/enc.py
+	touch "$@"
+
+build-cpp: build/enc-cpp
+.PHONY: build-cpp
+
+build-typescript: build/typescript.state
+.PHONY: build-typescript
+
+build/typescript.state: src/enc.ts
+	npm install
+	touch "$@"
+
+target/debug/enc: src/enc.rs
 	cargo build
 
-enc-cpp: src/enc.cpp
-	g++ -std=c++20 "$<" -o "$@" -lcpr
+target/release/enc:
+	cargo build --release
 
+target/release/enc-linux-x64:
+	cd target/release/ && ln -sf enc enc-linux-x64
+
+build/enc-cpp: src/enc.cpp CMakeLists.txt
+	cmake -B build
+	cmake --build build
+
+clean:
+	rm -rfv ./__pycache__/ ./target/ ./build/ ./examples/hello
+.PHONY: clean
+
+#####################
+### TRANSPILATION ###
+#####################
+
+transpile-rust: src/enc.rs
+.PHONY: transpile-rust
+
+transpile-python: src/enc.py
+.PHONY: transpile-python
+
+transpile-cpp: src/enc.cpp
+.PHONY: transpile-cpp
+
+transpile-typescript: src/enc.ts
+.PHONY: transpile-typescript
+
+transpile-haskell: src/enc.hs
+.PHONY: transpile-haskell
+
+ifneq ($(filter src/enc.rs transpile-rust,$(MAKECMDGOALS)),)
+src/enc.rs: src/enc.en Cargo.toml $(BOOTSTRAP_DEPS)
+	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
+endif
+
+ifneq ($(filter src/enc.py transpile-python,$(MAKECMDGOALS)),)
+src/enc.py: src/enc.en $(BOOTSTRAP_DEPS)
+	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):./requirements.txt
+endif
+
+ifneq ($(filter src/enc.cpp transpile-cpp,$(MAKECMDGOALS)),)
 src/enc.cpp: src/enc.en CMakeLists.txt $(BOOTSTRAP_DEPS)
 	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):CMakeLists.txt
+endif
 
-src/main.rs: src/enc.en $(BOOTSTRAP_DEPS)
-	TEST_COMMAND="make test" $(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):./Cargo.toml
+ifneq ($(filter src/enc.ts transpile-typescript,$(MAKECMDGOALS)),)
+src/enc.ts: src/enc.en package.json $(BOOTSTRAP_DEPS)
+	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS):./package.json
+endif
 
+ifneq ($(filter src/enc.hs transpile-haskell,$(MAKECMDGOALS)),)
 src/main.hs: src/enc.en $(BOOTSTRAP_DEPS)
 	$(ENC) "$<" -o "$@" $(BOOTSTRAP_FLAGS)
+endif
 
-bootstrap-python: src/enc.en $(BOOTSTRAP_DEPS)
-	./src/enc.bootstrap.py "$<" -o "src/enc.py" $(BOOTSTRAP_FLAGS):./requirements.txt
-.PHONY: bootstrap-python
+### RESOURCES ###
 
-bootstrap-rust: src/enc.en $(BOOTSTRAP_DEPS)
-	./src/enc.bootstrap.py "$<" -o "src/main.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml
-.PHONY: bootstrap-rust
+bootstrap-deps: $(BOOTSTRAP_DEPS)
+.PHONY: bootstrap-deps
 
-touch:
-	touch src/enc.en doc/booklet.en doc/icon.en test.en
-	touch examples/hello.en
-	touch examples/multi/lib.en examples/multi/main.en
-	touch examples/balloons/main.en examples/balloons/assets/balloon.en
-	touch examples/web/index.en examples/web/styles.en examples/web/main.en
-.PHONY: touch
+ifneq ($(filter res/languages.json,$(MAKECMDGOALS)),)
+res/languages.json: res/languages.en
+	$(ENC) "$<" -o "$@"
+endif
+
+ifneq ($(filter res/pricing.json,$(MAKECMDGOALS)),)
+res/pricing.json:
+	./scripts/pricing.py
+endif
+
+scripts: scripts/pricing.py
+.PHONY: scripts
+
+ifneq ($(filter scripts/pricing.py scripts,$(MAKECMDGOALS)),)
+scripts/pricing.py: scripts/pricing.en
+	$(ENC) "$<" -o "$@" --context-files ./res/pricing.json:requirements.txt
+endif
+
+###############
+### TESTING ###
+###############
 
 precommit: test
 .PHONY: precommit
 
-test:
-	cargo build
-	./test.sh test
+update-testdata: test.sh
+	./test.sh update tests-rust
+	./test.sh update tests-python
+	./test.sh update tests-cpp
+	./test.sh update tests-typescript
+.PHONY: update-testdata
+
+test: test-rust
 .PHONY: test
 
-test-goldens: test.sh
-	./test.sh test
-.PHONY: test-goldens
+test-rust: build-rust
+	./test.sh test tests-rust
+.PHONY: test-rust
 
-update-goldens: test.sh
-	./test.sh update
-.PHONY: update-goldens
+test-python: build-python
+	./test.sh test tests-python
+.PHONY: test-python
 
-tests:
-	@make -C tests
+test-cpp: build-cpp
+	./test.sh test tests-cpp
+.PHONY: test-cpp
+
+test-typescript: build-typescript
+	./test.sh test tests-typescript
+.PHONY: test-typescript
+
+tests: tests-rust
 .PHONY: tests
+
+tests-rust:
+	@make -C tests ENC_EDITION=enc
+.PHONY: tests-rust
 
 tests-cpp:
 	@make -C tests ENC_EDITION=enc-cpp
@@ -131,12 +206,22 @@ tests-python:
 	@make -C tests ENC_EDITION=enc-python
 .PHONY: tests-python
 
+tests-typescript:
+	@make -C tests ENC_EDITION=enc-typescript
+.PHONY: tests-python
+
 tests-release:
 	@make -C tests ENC_EDITION=enc-release
 .PHONY: tests-release
 
+###################
+### DEVELOPMENT ###
+###################
+
+ifneq ($(filter test.sh,$(MAKECMDGOALS)),)
 test.sh: test.en
 	$(ENC) "$<" -o "$@" --context-files Makefile
+endif
 
 format: format-python
 .PHONY: format
@@ -148,6 +233,28 @@ format-rust:
 format-python:
 	black src/*.py
 .PHONY: format-python
+
+### BOOTSTRAPPING ###
+
+bootstrap-python: src/enc.en requirements.txt $(BOOTSTRAP_DEPS)
+	./src/enc.bootstrap.py "$<" -o "src/enc.py" $(BOOTSTRAP_FLAGS):./requirements.txt
+.PHONY: bootstrap-python
+
+bootstrap-rust: src/enc.en Cargo.toml $(BOOTSTRAP_DEPS)
+	./src/enc.bootstrap.py "$<" -o "src/enc.rs" $(BOOTSTRAP_FLAGS):./Cargo.toml
+.PHONY: bootstrap-rust
+
+touch:
+	touch src/enc.en doc/booklet.en doc/icon.en test.en
+	touch examples/hello.en
+	touch examples/multi/lib.en examples/multi/main.en
+	touch examples/balloons/main.en examples/balloons/assets/balloon.en
+	touch examples/web/index.en examples/web/styles.en examples/web/main.en
+.PHONY: touch
+
+###############################
+### EXAMPLES AND VALIDATION ###
+###############################
 
 hello: examples/hello.en
 	./enc "$<" -o "examples/hello.c" --provider=google --model=gemini-2.5-flash
@@ -197,14 +304,9 @@ examples/hello.rs: examples/hello.en
 examples/hello.c: examples/hello.en
 	./enc "$<" -o "$@"
 
-res/pricing.json:
-	./scripts/pricing.py
-
-scripts: scripts/pricing.py
-.PHONY: scripts
-
-scripts/pricing.py: scripts/pricing.en
-	$(ENC) "$<" -o "$@" --context-files ./res/pricing.json:requirements.txt
+#####################
+### DOCUMENTATION ###
+#####################
 
 docs: doc/icon.png doc/booklet.md doc/enc.cast.gif
 .PHONY: docs
@@ -212,14 +314,20 @@ docs: doc/icon.png doc/booklet.md doc/enc.cast.gif
 doc/icon.png: doc/icon.svg
 	convert -background none "$<" "$@"
 
+ifneq ($(filter doc/icon.svg docs,$(MAKECMDGOALS)),)
 doc/icon.svg: doc/icon.en
 	./enc "$<" -o "$@" --context-files README.md:src/enc.en
+endif
 
+ifneq ($(filter doc/pitch.md docs,$(MAKECMDGOALS)),)
 doc/pitch.md: doc/pitch.en src/enc.en
 	$(ENC) "$<" -o "$@" --context-files src/enc.en
+endif
 
+ifneq ($(filter doc/booklet.md docs,$(MAKECMDGOALS)),)
 doc/booklet.md: doc/booklet.en .enc.env.example Makefile README.md src/enc.en examples/multi/README.md examples/parasite/README.md examples/balloons/README.md examples/web/README.md
-	$(ENC) "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md --provider=google --model=gemini-2.5-flash
+	$(ENC) "$<" -o "$@" --context-files README.md:.enc.env.example:Makefile:src/enc.en:examples/multi/README.md:examples/parasite/README.md:examples/balloons/README.md:examples/web/README.md
+endif
 
 doc/CAST.md:
 	echo "# CAST" > "$@"
@@ -235,7 +343,3 @@ doc/enc.cast: doc/CAST.md
 
 doc/enc.cast.gif: doc/enc.cast
 	agg --theme github-dark --last-frame-duration 10 "$<" "$@"
-
-clean:
-	rm -rfv ./__pycache__/ ./target/ ./examples/hello
-.PHONY: clean

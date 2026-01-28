@@ -8,8 +8,10 @@
 [ ] make test should search for key fragment AIza
 [ ] ensure deterministic output with the same input file
 [?] solution for build boilerplate (Cargo.toml, requirements.txt, etc)
+[x] add package.json and tsconfig.json for Node.js support
 [?] split src/enc.en into separate files
 
+[x] enhance benchmark mode: support provider/model pairs, target languages, and HTML report
 [x] benchmark mode: how many shots to produce enc with passing tests?
 [x] automated testing for PROVIDER=openai
 [x] automated testing for PROVIDER=anthropic

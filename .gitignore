@@ -7,3 +7,6 @@ target/
 /testdata/output/
 /enc-cpp
 /examples/interlang/main
+node_modules
+/build
+/benchmarks/logs/

@@ -1,6 +1,6 @@
-ENC_EDITION := enc
+ENC_EDITION ?= enc
 
-ENC := ../../$(ENC_EDITION)
+ENC ?= ../../$(ENC_EDITION)
 
 run: show-config transpile
 	python main.py
@@ -14,4 +14,5 @@ transpile: main.py
 .PHONY: transpile
 
 main.py: main.en context.txt
+	@rm -f main.py
 	$(ENC) "$<" -o "$@" --context-files context.txt

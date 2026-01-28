@@ -1,5 +1,7 @@
 # enc
 
+![enc icon](./doc/icon.png)
+
 `cc` for english or: the english to anything transpiler
 
 `enc` transpiles a plain english description of code to any other
@@ -75,6 +77,8 @@ you may want further [#configuration](#configuration)
 
 ## examples
 
+this entire repository is an example of an enc project
+
 browse the [examples](./examples/) for more use cases
 
 some examples require that `enc` be [installed](#installation#)
@@ -119,11 +123,13 @@ you can easily uninstall with `make uninstall`
 
 ## editions
 
-there are three editions of `enc` here:
+there are several editions of `enc` here:
 
 - [./src/enc.bootstrap.py](./src/enc.bootstrap.py): bootstrap edition built with aider
 - [./src/enc.py](./src/enc.py): python edition built by `enc` from [./src/enc.en](./src/enc.en)
-- [./src/main.rs](./src/main.rs): rust edition built by `enc` from [./src/enc.en](./src/enc.en)
+- [./src/enc.rs](./src/enc.rs): rust edition built by `enc` from [./src/enc.en](./src/enc.en)
+- [./src/enc.cpp](./src/enc.cpp): c++ edition built by `enc` from [./src/enc.en](./src/enc.en)
+- [./src/enc.ts](./src/enc.ts): typescript edition built by `enc` from [./src/enc.en](./src/enc.en)
 
 the default edition is the rust edition
 

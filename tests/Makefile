@@ -6,7 +6,7 @@ test:
 .PHONY: test
 
 test-google:
-	@make -B -C simple PROVIDER=google MODEL=gemini-2.5-flash
+	@make -B -C simple PROVIDER=google MODEL=gemini-3-flash-preview
 .PHONY: test-google
 
 test-openai:

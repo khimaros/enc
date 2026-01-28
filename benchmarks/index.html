@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>enc benchmark dashboard</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<style>
+		:root {
+			--bg: #ffffff;
+			--bg-card: #ffffff;
+			--text: #000000;
+			--text-muted: #222222;
+			--border: #cccccc;
+			--border-heading: #000000;
+			--th-bg: #f0f0f0;
+			--stat-bg: #f8f9fa;
+			--stat-value: #004085;
+			--pass: #155724;
+			--fail: #721c24;
+			--shadow: rgba(0,0,0,0.15);
+		}
+		[data-theme="dark"] {
+			--bg: #000000;
+			--bg-card: #121212;
+			--text: #ffffff;
+			--text-muted: #dddddd;
+			--border: #444444;
+			--border-heading: #ffffff;
+			--th-bg: #1e1e1e;
+			--stat-bg: #1a1a1a;
+			--stat-value: #80bdff;
+			--pass: #a1e9a4;
+			--fail: #ff8a80;
+			--shadow: rgba(255,255,255,0.05);
+		}
+		* { box-sizing: border-box; }
+		body { font-family: system-ui, sans-serif; margin: 0; padding: 2em; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
+		h1 { margin-top: 0; }
+		h2 { margin-top: 2em; margin-bottom: 0.5em; border-bottom: 2px solid var(--border-heading); padding-bottom: 0.3em; }
+		.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2em; margin-top: 1em; }
+		.card { background: var(--bg-card); border-radius: 8px; padding: 1.5em; box-shadow: 0 2px 4px var(--shadow); transition: background 0.3s; }
+		.card h3 { margin-top: 0; color: var(--text); }
+		.chart-container { position: relative; height: 300px; }
+		table { border-collapse: collapse; width: 100%; margin-top: 1em; }
+		th, td { border: 1px solid var(--border); padding: 0.5em 0.75em; text-align: left; }
+		th { background: var(--th-bg); position: relative; padding-right: 1.5em; }
+		th.sortable:hover { background: var(--stat-bg); cursor: pointer; }
+		th::after { 
+			content: ''; 
+			position: absolute; 
+			right: 0.5em; 
+			top: 50%;
+			border: 4px solid transparent;
+			margin-top: -2px;
+			opacity: 0.3; 
+		}
+		th.sort-asc::after { 
+			border-bottom-color: var(--text);
+			margin-top: -6px;
+			opacity: 1; 
+		}
+		th.sort-desc::after { 
+			border-top-color: var(--text);
+			margin-top: -2px;
+			opacity: 1; 
+		}
+		.table-wrapper { overflow-x: auto; width: 100%; }
+		.pass { color: var(--pass); font-weight: bold; }
+		.fail { color: var(--fail); font-weight: bold; }
+		.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1em; }
+		.stat-box { background: var(--stat-bg); padding: 1em; border-radius: 6px; text-align: center; transition: background 0.3s; }
+		.stat-box .value { font-size: 2em; font-weight: bold; color: var(--stat-value); }
+		.stat-box .label { font-size: 0.85em; color: var(--text-muted); margin-top: 0.3em; }
+		.header { display: flex; justify-content: space-between; align-items: center; }
+		.theme-toggle { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 0.5em 1em; cursor: pointer; color: var(--text); font-size: 0.9em; transition: background 0.3s, border-color 0.3s; }
+		.theme-toggle:hover { background: var(--stat-bg); }
+		a { color: var(--stat-value); }
+		a:visited { color: var(--stat-value); opacity: 0.8; }
+	</style>
+</head>
+<body>
+	<div class="header">
+		<h1>enc benchmark dashboard</h1>
+		<button class="theme-toggle" onclick="toggleTheme()">toggle dark mode</button>
+	</div>
+	<div id="loading">loading benchmark data...</div>
+	<div id="content" style="display: none;">
+		<h2>overview statistics</h2>
+		<div id="overview-stats" class="stat-grid"></div>
+
+		<h2>pass rate by model & language (all attempts)</h2>
+		<div class="card">
+			<div class="table-wrapper">
+				<table id="pass-rate-all-attempts-table"></table>
+			</div>
+		</div>
+
+		<div id="dynamic-charts"></div>
+
+		<h2>cost analysis</h2>
+		<div class="grid">
+			<div class="card">
+				<h3>average cost per run by model</h3>
+				<div class="chart-container"><canvas id="cost-by-model"></canvas></div>
+			</div>
+			<div class="card">
+				<h3>cost vs success (all runs)</h3>
+				<div class="chart-container"><canvas id="cost-scatter"></canvas></div>
+			</div>
+		</div>
+
+		<h2>time analysis</h2>
+		<div class="grid">
+			<div class="card">
+				<h3>average time per run by model</h3>
+				<div class="chart-container"><canvas id="time-by-model"></canvas></div>
+			</div>
+			<div class="card">
+				<h3>time distribution (box plot style)</h3>
+				<div class="chart-container"><canvas id="time-distribution"></canvas></div>
+			</div>
+		</div>
+
+		<h2>token usage</h2>
+		<div id="token-usage-charts" class="grid"></div>
+
+		<h2>attempts analysis</h2>
+		<div class="grid">
+			<div class="card">
+				<h3>average attempts to success by model</h3>
+				<div class="chart-container"><canvas id="attempts-chart"></canvas></div>
+			</div>
+		</div>
+
+		<h2>efficiency metrics</h2>
+		<div class="grid">
+			<div class="card">
+				<h3>cost per successful run</h3>
+				<div class="chart-container"><canvas id="cost-per-success"></canvas></div>
+			</div>
+			<div class="card">
+				<h3>tokens per second</h3>
+				<div class="chart-container"><canvas id="tokens-per-second"></canvas></div>
+			</div>
+		</div>
+
+		<h2>detailed results</h2>
+		<div id="detailed-tables"></div>
+	</div>
+
+	<script>
+	let benchmarkData = null;
+
+	function renderAll() {
+		if (!benchmarkData) return;
+
+		// destroy existing charts to ensure fresh render with new theme defaults
+		Object.values(Chart.instances).forEach(chart => chart.destroy());
+
+		renderOverviewStats(benchmarkData);
+		renderPassRateAllAttemptsTable(benchmarkData);
+		renderPassRateCharts(benchmarkData);
+		renderCostCharts(benchmarkData);
+		renderTimeCharts(benchmarkData);
+		renderTokenCharts(benchmarkData);
+		renderAttemptsCharts(benchmarkData);
+		renderEfficiencyCharts(benchmarkData);
+		renderTables(benchmarkData);
+
+		document.querySelectorAll('table').forEach(makeTableSortable);
+	}
+
+	function makeTableSortable(table) {
+		const headers = table.querySelectorAll('th');
+		headers.forEach((header, index) => {
+			header.classList.add('sortable');
+			header.addEventListener('click', () => {
+				const tbody = table.querySelector('tbody') || table;
+				const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.querySelector('th'));
+				const isAscending = header.classList.contains('sort-asc');
+				const direction = isAscending ? -1 : 1;
+				
+				rows.sort((a, b) => {
+					const aCol = a.querySelectorAll('td')[index].innerText.trim();
+					const bCol = b.querySelectorAll('td')[index].innerText.trim();
+					
+					const aVal = parseValue(aCol);
+					const bVal = parseValue(bCol);
+					
+					if (aVal < bVal) return -1 * direction;
+					if (aVal > bVal) return 1 * direction;
+					return 0;
+				});
+				
+				headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+				header.classList.add(isAscending ? 'sort-desc' : 'sort-asc');
+
+				rows.forEach(row => tbody.appendChild(row));
+			});
+		});
+	}
+
+	function parseValue(val) {
+		if (!val || val === '-') return -Infinity;
+		// handle rate like "80.0% (4/5)" -> extract 80.0
+		// handle cost like "$0.14" -> extract 0.14
+		// handle time like "248.1s" -> extract 248.1
+		// handle comma separated numbers
+		const clean = val.replace(/[$,%]/g, '').split(/[ (]/)[0].replace(/,/g, '');
+		const num = parseFloat(clean);
+		return isNaN(num) ? val.toLowerCase() : num;
+	}
+
+	// theme handling
+	function getPreferredTheme() {
+		const stored = localStorage.getItem('theme');
+		if (stored) return stored;
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+	}
+
+	function applyTheme(theme) {
+		document.documentElement.setAttribute('data-theme', theme);
+		localStorage.setItem('theme', theme);
+		updateChartColors(theme);
+		renderAll();
+	}
+
+	function toggleTheme() {
+		const current = document.documentElement.getAttribute('data-theme') || 'light';
+		applyTheme(current === 'dark' ? 'light' : 'dark');
+	}
+	window.toggleTheme = toggleTheme;
+
+	function updateChartColors(theme) {
+		const color = theme === 'dark' ? '#ffffff' : '#000000';
+		Chart.defaults.color = color;
+		Chart.defaults.borderColor = theme === 'dark' ? '#444' : '#ccc';
+	}
+
+	// apply theme immediately
+	applyTheme(getPreferredTheme());
+
+	// listen for system theme changes
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+		if (!localStorage.getItem('theme')) {
+			applyTheme(e.matches ? 'dark' : 'light');
+		}
+	});
+
+	const COLORS = {
+		'gemini-3-flash-preview': { bg: 'rgba(66, 133, 244, 0.7)', border: '#4285f4' },
+		'gemini-3-pro-preview': { bg: 'rgba(52, 168, 83, 0.7)', border: '#34a853' },
+		'claude-opus-4-5-20251101': { bg: 'rgba(251, 188, 4, 0.7)', border: '#fbbc04' }
+	};
+
+	const LANG_COLORS = [
+		'rgba(66, 133, 244, 0.7)', // blue
+		'rgba(251, 188, 4, 0.7)',  // yellow
+		'rgba(52, 168, 83, 0.7)',  // green
+		'rgba(161, 66, 244, 0.7)', // purple
+		'rgba(244, 66, 66, 0.7)'   // red
+	];
+
+	async function loadData() {
+		const resp = await fetch('results.json');
+		return resp.json();
+	}
+
+	function getModelStats(results) {
+		const stats = {};
+		for (const r of results) {
+			if (!stats[r.model]) {
+				stats[r.model] = { runs: [], passes: 0, fails: 0, costs: [], times: [], attempts: [], tokens: [] };
+			}
+			const s = stats[r.model];
+			s.runs.push(r);
+			if (r.status === 'PASS') s.passes++;
+			else s.fails++;
+			s.costs.push(r.cost);
+			s.times.push(r.time_seconds);
+			s.attempts.push(r.attempts);
+			s.tokens.push(r.tokens);
+		}
+		return stats;
+	}
+
+	function avg(arr) {
+		return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+	}
+
+	function sum(arr) {
+		return arr.reduce((a, b) => a + b, 0);
+	}
+
+	function createChart(id, config) {
+		const el = document.getElementById(id);
+		if (!el) return null;
+		return new Chart(el, config);
+	}
+
+	function renderOverviewStats(data) {
+		const all = data.benchmarks.flatMap(b => b.results);
+		const totalRuns = all.length;
+		const totalPasses = all.filter(r => r.status === 'PASS').length;
+		const totalCost = sum(all.map(r => r.cost));
+		const totalTime = sum(all.map(r => r.time_seconds));
+		const totalTokens = sum(all.map(r => (r.tokens.input || 0) + (r.tokens.output || 0)));
+
+		const html = `
+			<div class="stat-box"><div class="value">${totalRuns}</div><div class="label">total runs</div></div>
+			<div class="stat-box"><div class="value">${totalPasses}/${totalRuns}</div><div class="label">passes (${(100*totalPasses/totalRuns).toFixed(0)}%)</div></div>
+			<div class="stat-box"><div class="value">$${totalCost.toFixed(2)}</div><div class="label">total cost</div></div>
+			<div class="stat-box"><div class="value">${(totalTime/60).toFixed(0)}m</div><div class="label">total time</div></div>
+			<div class="stat-box"><div class="value">${(totalTokens/1000).toFixed(0)}k</div><div class="label">total tokens</div></div>
+		`;
+		document.getElementById('overview-stats').innerHTML = html;
+	}
+
+	function renderPassRateAllAttemptsTable(data) {
+		const table = document.getElementById('pass-rate-all-attempts-table');
+		if (!table) return;
+
+		const stats = {}; // model -> lang -> { passes, attempts }
+		const models = new Set();
+		const langs = new Set();
+
+		for (const bench of data.benchmarks) {
+			const lang = bench.target_language;
+			langs.add(lang);
+			for (const r of bench.results) {
+				const model = r.model;
+				models.add(model);
+				if (!stats[model]) stats[model] = {};
+				if (!stats[model][lang]) stats[model][lang] = { passes: 0, attempts: 0 };
+				
+				if (r.status === 'PASS') stats[model][lang].passes++;
+				stats[model][lang].attempts += r.attempts;
+			}
+		}
+
+		const sortedModels = Array.from(models).sort();
+		const sortedLangs = Array.from(langs).sort();
+
+		let html = '<thead><tr><th>model</th>';
+		for (const lang of sortedLangs) {
+			html += `<th>${lang}</th>`;
+		}
+		html += '<th>overall</th></tr></thead><tbody>';
+
+		for (const model of sortedModels) {
+			html += `<tr><td>${model}</td>`;
+			let modelTotalPasses = 0;
+			let modelTotalAttempts = 0;
+			for (const lang of sortedLangs) {
+				const s = stats[model][lang];
+				if (s && s.attempts > 0) {
+					const rate = (s.passes / s.attempts) * 100;
+					html += `<td>${rate.toFixed(1)}% <small>(${s.passes}/${s.attempts})</small></td>`;
+					modelTotalPasses += s.passes;
+					modelTotalAttempts += s.attempts;
+				} else {
+					html += '<td>-</td>';
+				}
+			}
+			const overallRate = modelTotalAttempts > 0 ? (modelTotalPasses / modelTotalAttempts) * 100 : 0;
+			html += `<td><strong>${overallRate.toFixed(1)}%</strong> <small>(${modelTotalPasses}/${modelTotalAttempts})</small></td>`;
+			html += '</tr>';
+		}
+		html += '</tbody>';
+		table.innerHTML = html;
+	}
+
+	function renderPassRateCharts(data) {
+		const container = document.getElementById('dynamic-charts');
+		container.innerHTML = '<h2>pass rate by model (max 5 attempts)</h2><div class="grid" id="pass-rate-grid"></div>';
+		const grid = document.getElementById('pass-rate-grid');
+
+		for (const bench of data.benchmarks) {
+			const passRateChartId = `pass-rate-${bench.target_language}`;
+			const card = document.createElement('div');
+			card.className = 'card';
+			card.innerHTML = `<h3>${bench.target_language} target</h3><div class="chart-container"><canvas id="${passRateChartId}"></canvas></div>`;
+			grid.appendChild(card);
+
+			const stats = getModelStats(bench.results);
+			const models = Object.keys(stats);
+
+			const passRates = models.map(m => {
+				const total = stats[m].passes + stats[m].fails;
+				return total > 0 ? (stats[m].passes / total) * 100 : 0;
+			});
+
+			createChart(passRateChartId, {
+				type: 'bar',
+				data: {
+					labels: models.map(m => m.replace('-preview', '').replace('-20251101', '')),
+					datasets: [
+						{ label: 'pass', data: passRates, backgroundColor: 'rgba(46, 125, 50, 0.7)' },
+						{ label: 'fail', data: passRates.map(p => 100 - p), backgroundColor: 'rgba(198, 40, 40, 0.7)' }
+					]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, max: 100, title: { display: true, text: 'pass rate (%)' } } }
+				}
+			});
+		}
+	}
+
+	function renderCostCharts(data) {
+		const allStats = {};
+		for (const bench of data.benchmarks) {
+			for (const r of bench.results) {
+				const key = `${r.model}-${bench.target_language}`;
+				if (!allStats[key]) allStats[key] = { model: r.model, lang: bench.target_language, costs: [] };
+				allStats[key].costs.push(r.cost);
+			}
+		}
+
+		const models = [...new Set(data.benchmarks.flatMap(b => b.results.map(r => r.model)))];
+		const langs = data.benchmarks.map(b => b.target_language);
+
+		createChart('cost-by-model', {
+			type: 'bar',
+			data: {
+				labels: models.map(m => m.replace('-preview', '').replace('-20251101', '')),
+				datasets: langs.map((lang, i) => ({
+					label: lang,
+					data: models.map(m => {
+						const key = `${m}-${lang}`;
+						return allStats[key] ? avg(allStats[key].costs) : 0;
+					}),
+					backgroundColor: LANG_COLORS[i % LANG_COLORS.length]
+				}))
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: { y: { beginAtZero: true, title: { display: true, text: 'cost ($)' } } }
+			}
+		});
+
+		const scatterData = data.benchmarks.flatMap(b => 
+			b.results.filter(r => r.cost > 0).map(r => ({
+				x: r.cost,
+				y: r.time_seconds,
+				status: r.status,
+				model: r.model,
+				lang: b.target_language
+			}))
+		);
+
+		createChart('cost-scatter', {
+			type: 'scatter',
+			data: {
+				datasets: [
+					{
+						label: 'pass',
+						data: scatterData.filter(d => d.status === 'PASS').map(d => ({ x: d.x, y: d.y })),
+						backgroundColor: 'rgba(46, 125, 50, 0.7)'
+					},
+					{
+						label: 'fail',
+						data: scatterData.filter(d => d.status === 'FAIL').map(d => ({ x: d.x, y: d.y })),
+						backgroundColor: 'rgba(198, 40, 40, 0.7)'
+					}
+				]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: {
+					x: { title: { display: true, text: 'cost ($)' } },
+					y: { title: { display: true, text: 'time (s)' } }
+				}
+			}
+		});
+	}
+
+	function renderTimeCharts(data) {
+		const allStats = {};
+		for (const bench of data.benchmarks) {
+			for (const r of bench.results) {
+				const key = `${r.model}-${bench.target_language}`;
+				if (!allStats[key]) allStats[key] = { model: r.model, lang: bench.target_language, times: [] };
+				allStats[key].times.push(r.time_seconds);
+			}
+		}
+
+		const models = [...new Set(data.benchmarks.flatMap(b => b.results.map(r => r.model)))];
+		const langs = data.benchmarks.map(b => b.target_language);
+
+		createChart('time-by-model', {
+			type: 'bar',
+			data: {
+				labels: models.map(m => m.replace('-preview', '').replace('-20251101', '')),
+				datasets: langs.map((lang, i) => ({
+					label: lang,
+					data: models.map(m => {
+						const key = `${m}-${lang}`;
+						return allStats[key] ? avg(allStats[key].times) : 0;
+					}),
+					backgroundColor: LANG_COLORS[i % LANG_COLORS.length]
+				}))
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: { y: { beginAtZero: true, title: { display: true, text: 'time (s)' } } }
+			}
+		});
+
+		const distData = [];
+		for (const bench of data.benchmarks) {
+			const stats = getModelStats(bench.results);
+			for (const model of Object.keys(stats)) {
+				const times = stats[model].times.filter(t => t > 10).sort((a, b) => a - b);
+				if (times.length === 0) continue;
+				distData.push({
+					label: `${model.replace('-preview', '').replace('-20251101', '')} (${bench.target_language})`,
+					min: times[0],
+					max: times[times.length - 1],
+					avg: avg(times),
+					model, lang: bench.target_language
+				});
+			}
+		}
+
+		createChart('time-distribution', {
+			type: 'bar',
+			data: {
+				labels: distData.map(d => d.label),
+				datasets: [
+					{ label: 'min', data: distData.map(d => d.min), backgroundColor: 'rgba(66, 133, 244, 0.5)' },
+					{ label: 'avg', data: distData.map(d => d.avg), backgroundColor: 'rgba(66, 133, 244, 0.8)' },
+					{ label: 'max', data: distData.map(d => d.max), backgroundColor: 'rgba(66, 133, 244, 0.3)' }
+				]
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: { y: { beginAtZero: true, title: { display: true, text: 'time (s)' } } }
+			}
+		});
+	}
+
+	function renderTokenCharts(data) {
+		const grid = document.getElementById('token-usage-charts');
+		grid.innerHTML = '';
+
+		for (const bench of data.benchmarks) {
+			const chartId = `tokens-${bench.target_language}`;
+			const card = document.createElement('div');
+			card.className = 'card';
+			card.innerHTML = `<h3>average tokens by model (${bench.target_language})</h3><div class="chart-container"><canvas id="${chartId}"></canvas></div>`;
+			grid.appendChild(card);
+
+			const stats = getModelStats(bench.results);
+			const models = Object.keys(stats);
+			const tokenChartId = `tokens-${bench.target_language}`;
+
+			const inputAvg = models.map(m => avg(stats[m].tokens.map(t => t.input || 0)));
+			const outputAvg = models.map(m => avg(stats[m].tokens.map(t => t.output || 0)));
+			const thinkingAvg = models.map(m => avg(stats[m].tokens.filter(t => t.thinking).map(t => t.thinking)));
+
+			createChart(tokenChartId, {
+				type: 'bar',
+				data: {
+					labels: models.map(m => m.replace('-preview', '').replace('-20251101', '')),
+					datasets: [
+						{ label: 'input', data: inputAvg, backgroundColor: 'rgba(66, 133, 244, 0.7)' },
+						{ label: 'output', data: outputAvg, backgroundColor: 'rgba(52, 168, 83, 0.7)' },
+						{ label: 'thinking', data: thinkingAvg, backgroundColor: 'rgba(251, 188, 4, 0.7)' }
+					]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true, title: { display: true, text: 'tokens' } } }
+				}
+			});
+		}
+	}
+
+	function renderAttemptsCharts(data) {
+		const allStats = {};
+		for (const bench of data.benchmarks) {
+			for (const r of bench.results) {
+				const key = `${r.model}-${bench.target_language}`;
+				if (!allStats[key]) allStats[key] = { model: r.model, lang: bench.target_language, attempts: [] };
+				allStats[key].attempts.push(r.attempts);
+			}
+		}
+
+		const models = [...new Set(data.benchmarks.flatMap(b => b.results.map(r => r.model)))];
+		const langs = data.benchmarks.map(b => b.target_language);
+
+		createChart('attempts-chart', {
+			type: 'bar',
+			data: {
+				labels: models.map(m => m.replace('-preview', '').replace('-20251101', '')),
+				datasets: langs.map((lang, i) => ({
+					label: lang,
+					data: models.map(m => {
+						const key = `${m}-${lang}`;
+						return allStats[key] ? avg(allStats[key].attempts) : 0;
+					}),
+					backgroundColor: LANG_COLORS[i % LANG_COLORS.length]
+				}))
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: { y: { beginAtZero: true, title: { display: true, text: 'attempts' } } }
+			}
+		});
+	}
+
+	function renderEfficiencyCharts(data) {
+		const costPerSuccess = {};
+		const tokensPerSec = {};
+
+		for (const bench of data.benchmarks) {
+			for (const r of bench.results) {
+				const key = `${r.model}-${bench.target_language}`;
+				if (!costPerSuccess[key]) costPerSuccess[key] = { model: r.model, lang: bench.target_language, totalCost: 0, passes: 0 };
+				costPerSuccess[key].totalCost += r.cost;
+				if (r.status === 'PASS') costPerSuccess[key].passes++;
+
+				if (!tokensPerSec[key]) tokensPerSec[key] = { model: r.model, lang: bench.target_language, tokens: [], times: [] };
+				const totalTokens = (r.tokens.input || 0) + (r.tokens.output || 0);
+				if (totalTokens > 0 && r.time_seconds > 0) {
+					tokensPerSec[key].tokens.push(totalTokens);
+					tokensPerSec[key].times.push(r.time_seconds);
+				}
+			}
+		}
+
+		const models = [...new Set(data.benchmarks.flatMap(b => b.results.map(r => r.model)))];
+		const langs = data.benchmarks.map(b => b.target_language);
+
+		createChart('cost-per-success', {
+			type: 'bar',
+			data: {
+				labels: models.map(m => m.replace('-preview', '').replace('-20251101', '')),
+				datasets: langs.map((lang, i) => ({
+					label: lang,
+					data: models.map(m => {
+						const key = `${m}-${lang}`;
+						const d = costPerSuccess[key];
+						return d && d.passes > 0 ? d.totalCost / d.passes : 0;
+					}),
+					backgroundColor: LANG_COLORS[i % LANG_COLORS.length]
+				}))
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: { y: { beginAtZero: true, title: { display: true, text: 'cost per success ($)' } } }
+			}
+		});
+
+		createChart('tokens-per-second', {
+			type: 'bar',
+			data: {
+				labels: models.map(m => m.replace('-preview', '').replace('-20251101', '')),
+				datasets: langs.map((lang, i) => ({
+					label: lang,
+					data: models.map(m => {
+						const key = `${m}-${lang}`;
+						const d = tokensPerSec[key];
+						if (!d || d.tokens.length === 0) return 0;
+						const totalTokens = sum(d.tokens);
+						const totalTime = sum(d.times);
+						return totalTokens / totalTime;
+					}),
+					backgroundColor: LANG_COLORS[i % LANG_COLORS.length]
+				}))
+			},
+			options: {
+				responsive: true,
+				maintainAspectRatio: false,
+				scales: { y: { beginAtZero: true, title: { display: true, text: 'tokens/second' } } }
+			}
+		});
+	}
+
+	function renderTables(data) {
+		const container = document.getElementById('detailed-tables');
+		container.innerHTML = '';
+
+		for (const bench of data.benchmarks) {
+			const tableId = `table-${bench.target_language}`;
+			const card = document.createElement('div');
+			card.className = 'card';
+			if (container.children.length > 0) card.style.marginTop = '2em';
+			card.innerHTML = `<h3>${bench.target_language} target</h3><div class="table-wrapper"><table id="${tableId}"></table></div>`;
+			container.appendChild(card);
+
+			let html = `
+				<thead>
+					<tr>
+						<th>provider</th>
+						<th>model</th>
+						<th>run</th>
+						<th>attempts</th>
+						<th>status</th>
+						<th>cost</th>
+						<th>time</th>
+						<th>input tokens</th>
+						<th>output tokens</th>
+						<th>thinking tokens</th>
+						<th>log</th>
+						<th>debug</th>
+					</tr>
+				</thead>
+				<tbody>
+			`;
+			for (const r of bench.results) {
+				const logLink = r.log ? `<a href="${r.log}" target="_blank">view</a>` : '-';
+				const debugLink = r.debug_log ? `<a href="${r.debug_log}" target="_blank">debug</a>` : '-';
+				html += `
+					<tr>
+						<td>${r.provider}</td>
+						<td>${r.model}</td>
+						<td>${r.run}</td>
+						<td>${r.attempts}</td>
+						<td class="${r.status.toLowerCase()}">${r.status}</td>
+						<td>$${r.cost.toFixed(2)}</td>
+						<td>${r.time_seconds.toFixed(1)}s</td>
+						<td>${(r.tokens.input || 0).toLocaleString()}</td>
+						<td>${(r.tokens.output || 0).toLocaleString()}</td>
+						<td>${r.tokens.thinking ? r.tokens.thinking.toLocaleString() : '-'}</td>
+						<td>${logLink}</td>
+						<td>${debugLink}</td>
+					</tr>
+				`;
+			}
+			html += '</tbody>';
+			document.getElementById(tableId).innerHTML = html;
+		}
+	}
+
+	async function init() {
+		try {
+			benchmarkData = await loadData();
+			document.getElementById('loading').style.display = 'none';
+			document.getElementById('content').style.display = 'block';
+			renderAll();
+		} catch (e) {
+			document.getElementById('loading').textContent = 'error loading data: ' + e.message;
+		}
+	}
+
+	init();
+	</script>
+</body>
+</html>

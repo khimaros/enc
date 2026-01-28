@@ -1,8 +1,8 @@
 this is the description for a goldens test harness
 
-usage: test <update|test|help>
+usage: test <update|test|help> [target...]
 
-to update/test, the "tests" make target should be built (make -B)
+to update/test, the "tests" make target is used by default if no targets are specified.
 
 on update, the result of the build including all shell history is saved to goldens
 

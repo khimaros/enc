@@ -13,12 +13,12 @@ OUTPUT_DIR="./testdata/output"
 
 # the test runner produces very detailed logging to stderr
 log() {
-	echo "test: $@" >&2
+	echo "test: $*" >&2
 }
 
-# usage: test <update|test|help>
+# usage: test <update|test|help> [target...]
 usage() {
-	echo "usage: $0 <update|test|help>" >&2
+	echo "usage: $0 <update|test|help> [target...]" >&2
 	exit 1
 }
 
@@ -130,11 +130,18 @@ run_test() {
 }
 
 main() {
-	if [ "$#" -ne 1 ]; then
+	if [ "$#" -lt 1 ]; then
 		usage
 	fi
 
-	case "$1" in
+	local cmd="$1"
+	shift
+
+	if [ "$#" -gt 0 ]; then
+		TARGETS=("$@")
+	fi
+
+	case "$cmd" in
 	update)
 		run_update
 		;;
@@ -145,7 +152,7 @@ main() {
 		usage
 		;;
 	*)
-		log "error: unknown command '$1'"
+		log "error: unknown command '$cmd'"
 		usage
 		;;
 	esac

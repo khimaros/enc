@@ -12,11 +12,13 @@ run `make hello` for a quick test during development
 
 run `make test` for comprehensive tests before committing to git
 
-if there are intentional changes to behavior run `make update-goldens`
+if there are intentional changes to behavior run `make update-testdata`
 
 always inspect the goldens diff closely
 
 ## release
+
+run `make TEST_COMMAND="make test-rust" transpile-rust`
 
 update version in Cargo.toml
 

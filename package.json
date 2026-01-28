@@ -1,0 +1,28 @@
+{
+  "name": "enc",
+  "version": "0.8.0",
+  "description": "the english to anything transpiler",
+  "type": "module",
+  "bin": {
+    "enc": "./src/enc.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./src/enc.js",
+    "test": "echo \"Error: use 'make test-typescript' (once implemented)\" && exit 1"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.18.0",
+    "@google/generative-ai": "^0.2.1",
+    "axios": "^1.6.7",
+    "dotenv": "^16.4.5",
+    "env-paths": "^3.0.0",
+    "json5": "^2.2.3",
+    "openai": "^4.28.0",
+    "yargs": "^17.7.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20"
+  }
+}
