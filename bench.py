@@ -106,6 +106,7 @@ def setup_benchmark_dir(tmp_dir, root_dir, language):
         ("src/enc.en", "src/enc.en"),
         (".enc.env.example", ".enc.env.example"),
         ("Makefile", "Makefile"),
+        ("CMakeLists.txt", "CMakeLists.txt"),
         ("Cargo.toml", "Cargo.toml"),
         ("requirements.txt", "requirements.txt"),
         ("package.json", "package.json"),

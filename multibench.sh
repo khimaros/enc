@@ -15,7 +15,7 @@ LANGUAGES=(
 	"rust"
 	"python"
 	"typescript"
-	#"cpp"
+	"cpp"
 	#"haskell"
 )
 

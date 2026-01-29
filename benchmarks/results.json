@@ -212,6 +212,246 @@
             "output": 49566,
             "thinking": 1386
           }
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.138904,
+          "time_seconds": 926.4,
+          "tokens": {
+            "input": 32590,
+            "output": 66252,
+            "thinking": 23225
+          },
+          "log": "logs/rust-google-gemini-3-pro-preview-run6-20260128-190109.log",
+          "debug_log": "logs/rust-google-gemini-3-pro-preview-run6-20260128-190109.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.16702,
+          "time_seconds": 939.5,
+          "tokens": {
+            "input": 32590,
+            "output": 66068,
+            "thinking": 25752
+          },
+          "log": "logs/rust-google-gemini-3-pro-preview-run7-20260128-191648.log",
+          "debug_log": "logs/rust-google-gemini-3-pro-preview-run7-20260128-191648.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 8,
+          "attempts": 5,
+          "status": "PASS",
+          "cost": 1.239812,
+          "time_seconds": 1076.96,
+          "tokens": {
+            "input": 32590,
+            "output": 62757,
+            "thinking": 35129
+          },
+          "log": "logs/rust-google-gemini-3-pro-preview-run8-20260128-193445.log",
+          "debug_log": "logs/rust-google-gemini-3-pro-preview-run8-20260128-193445.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.052996,
+          "time_seconds": 898.71,
+          "tokens": {
+            "input": 32590,
+            "output": 62026,
+            "thinking": 20292
+          },
+          "log": "logs/rust-google-gemini-3-pro-preview-run9-20260128-194944.log",
+          "debug_log": "logs/rust-google-gemini-3-pro-preview-run9-20260128-194944.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 10,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.077908,
+          "time_seconds": 867.09,
+          "tokens": {
+            "input": 32590,
+            "output": 63308,
+            "thinking": 21086
+          },
+          "log": "logs/rust-google-gemini-3-pro-preview-run10-20260128-200411.log",
+          "debug_log": "logs/rust-google-gemini-3-pro-preview-run10-20260128-200411.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.171545,
+          "time_seconds": 399.93,
+          "tokens": {
+            "input": 32590,
+            "output": 45445,
+            "thinking": 6305
+          },
+          "log": "logs/rust-google-gemini-3-flash-preview-run6-20260128-201051.log",
+          "debug_log": "logs/rust-google-gemini-3-flash-preview-run6-20260128-201051.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.172265,
+          "time_seconds": 504.3,
+          "tokens": {
+            "input": 32590,
+            "output": 45468,
+            "thinking": 6522
+          },
+          "log": "logs/rust-google-gemini-3-flash-preview-run7-20260128-201915.log",
+          "debug_log": "logs/rust-google-gemini-3-flash-preview-run7-20260128-201915.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 8,
+          "attempts": 3,
+          "status": "PASS",
+          "cost": 0.109515,
+          "time_seconds": 327.03,
+          "tokens": {
+            "input": 19554,
+            "output": 29701,
+            "thinking": 3545
+          },
+          "log": "logs/rust-google-gemini-3-flash-preview-run8-20260128-202443.log",
+          "debug_log": "logs/rust-google-gemini-3-flash-preview-run8-20260128-202443.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.17384,
+          "time_seconds": 348.35,
+          "tokens": {
+            "input": 32590,
+            "output": 46857,
+            "thinking": 5658
+          },
+          "log": "logs/rust-google-gemini-3-flash-preview-run9-20260128-203031.log",
+          "debug_log": "logs/rust-google-gemini-3-flash-preview-run9-20260128-203031.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 10,
+          "attempts": 1,
+          "status": "PASS",
+          "cost": 0.034267,
+          "time_seconds": 120.41,
+          "tokens": {
+            "input": 6518,
+            "output": 8955,
+            "thinking": 1381
+          },
+          "log": "logs/rust-google-gemini-3-flash-preview-run10-20260128-203231.log",
+          "debug_log": "logs/rust-google-gemini-3-flash-preview-run10-20260128-203231.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 6,
+          "attempts": 3,
+          "status": "PASS",
+          "cost": 1.419025,
+          "time_seconds": 648.39,
+          "tokens": {
+            "input": 20040,
+            "output": 51933,
+            "thinking": 820
+          },
+          "log": "logs/rust-anthropic-claude-opus-4-5-20251101-run6-20260128-204320.log",
+          "debug_log": "logs/rust-anthropic-claude-opus-4-5-20251101-run6-20260128-204320.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 7,
+          "attempts": 1,
+          "status": "PASS",
+          "cost": 0.45725,
+          "time_seconds": 243.18,
+          "tokens": {
+            "input": 6680,
+            "output": 16696,
+            "thinking": 258
+          },
+          "log": "logs/rust-anthropic-claude-opus-4-5-20251101-run7-20260128-204723.log",
+          "debug_log": "logs/rust-anthropic-claude-opus-4-5-20251101-run7-20260128-204723.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 8,
+          "attempts": 1,
+          "status": "PASS",
+          "cost": 0.491925,
+          "time_seconds": 254.15,
+          "tokens": {
+            "input": 6680,
+            "output": 18020,
+            "thinking": 321
+          },
+          "log": "logs/rust-anthropic-claude-opus-4-5-20251101-run8-20260128-205137.log",
+          "debug_log": "logs/rust-anthropic-claude-opus-4-5-20251101-run8-20260128-205137.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 9,
+          "attempts": 1,
+          "status": "PASS",
+          "cost": 0.50055,
+          "time_seconds": 247.49,
+          "tokens": {
+            "input": 6680,
+            "output": 18212,
+            "thinking": 474
+          },
+          "log": "logs/rust-anthropic-claude-opus-4-5-20251101-run9-20260128-205545.log",
+          "debug_log": "logs/rust-anthropic-claude-opus-4-5-20251101-run9-20260128-205545.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 10,
+          "attempts": 1,
+          "status": "PASS",
+          "cost": 0.4855,
+          "time_seconds": 244.02,
+          "tokens": {
+            "input": 6680,
+            "output": 17773,
+            "thinking": 311
+          },
+          "log": "logs/rust-anthropic-claude-opus-4-5-20251101-run10-20260128-205949.log",
+          "debug_log": "logs/rust-anthropic-claude-opus-4-5-20251101-run10-20260128-205949.debug.log"
         }
       ]
     },
@@ -427,6 +667,246 @@
             "output": 54917,
             "thinking": 1186
           }
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.143604,
+          "time_seconds": 881.56,
+          "tokens": {
+            "input": 31460,
+            "output": 50031,
+            "thinking": 40026
+          },
+          "log": "logs/python-google-gemini-3-pro-preview-run6-20260128-211431.log",
+          "debug_log": "logs/python-google-gemini-3-pro-preview-run6-20260128-211431.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.183156,
+          "time_seconds": 877.0,
+          "tokens": {
+            "input": 31460,
+            "output": 50011,
+            "thinking": 43342
+          },
+          "log": "logs/python-google-gemini-3-pro-preview-run7-20260128-212908.log",
+          "debug_log": "logs/python-google-gemini-3-pro-preview-run7-20260128-212908.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 8,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.281016,
+          "time_seconds": 932.8,
+          "tokens": {
+            "input": 31460,
+            "output": 46171,
+            "thinking": 55337
+          },
+          "log": "logs/python-google-gemini-3-pro-preview-run8-20260128-214440.log",
+          "debug_log": "logs/python-google-gemini-3-pro-preview-run8-20260128-214440.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.412296,
+          "time_seconds": 1078.32,
+          "tokens": {
+            "input": 31460,
+            "output": 38856,
+            "thinking": 73592
+          },
+          "log": "logs/python-google-gemini-3-pro-preview-run9-20260128-220239.log",
+          "debug_log": "logs/python-google-gemini-3-pro-preview-run9-20260128-220239.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 10,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.279804,
+          "time_seconds": 927.9,
+          "tokens": {
+            "input": 31460,
+            "output": 48644,
+            "thinking": 52763
+          },
+          "log": "logs/python-google-gemini-3-pro-preview-run10-20260128-221807.log",
+          "debug_log": "logs/python-google-gemini-3-pro-preview-run10-20260128-221807.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.146251,
+          "time_seconds": 278.73,
+          "tokens": {
+            "input": 31460,
+            "output": 36735,
+            "thinking": 6772
+          },
+          "log": "logs/python-google-gemini-3-flash-preview-run6-20260128-222246.log",
+          "debug_log": "logs/python-google-gemini-3-flash-preview-run6-20260128-222246.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.315658,
+          "time_seconds": 594.9,
+          "tokens": {
+            "input": 31460,
+            "output": 91358,
+            "thinking": 8618
+          },
+          "log": "logs/python-google-gemini-3-flash-preview-run7-20260128-223240.log",
+          "debug_log": "logs/python-google-gemini-3-flash-preview-run7-20260128-223240.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 8,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.146494,
+          "time_seconds": 276.28,
+          "tokens": {
+            "input": 31460,
+            "output": 36354,
+            "thinking": 7234
+          },
+          "log": "logs/python-google-gemini-3-flash-preview-run8-20260128-223717.log",
+          "debug_log": "logs/python-google-gemini-3-flash-preview-run8-20260128-223717.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.144499,
+          "time_seconds": 272.78,
+          "tokens": {
+            "input": 31460,
+            "output": 35568,
+            "thinking": 7355
+          },
+          "log": "logs/python-google-gemini-3-flash-preview-run9-20260128-224150.log",
+          "debug_log": "logs/python-google-gemini-3-flash-preview-run9-20260128-224150.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 10,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.162979,
+          "time_seconds": 310.42,
+          "tokens": {
+            "input": 31460,
+            "output": 33416,
+            "thinking": 15667
+          },
+          "log": "logs/python-google-gemini-3-flash-preview-run10-20260128-224700.log",
+          "debug_log": "logs/python-google-gemini-3-flash-preview-run10-20260128-224700.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.4347,
+          "time_seconds": 1061.55,
+          "tokens": {
+            "input": 32265,
+            "output": 89625,
+            "thinking": 1310
+          },
+          "log": "logs/python-anthropic-claude-opus-4-5-20251101-run6-20260128-230442.log",
+          "debug_log": "logs/python-anthropic-claude-opus-4-5-20251101-run6-20260128-230442.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.3438,
+          "time_seconds": 1017.18,
+          "tokens": {
+            "input": 32265,
+            "output": 85980,
+            "thinking": 1319
+          },
+          "log": "logs/python-anthropic-claude-opus-4-5-20251101-run7-20260128-232139.log",
+          "debug_log": "logs/python-anthropic-claude-opus-4-5-20251101-run7-20260128-232139.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 8,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.36285,
+          "time_seconds": 1032.18,
+          "tokens": {
+            "input": 32265,
+            "output": 86667,
+            "thinking": 1394
+          },
+          "log": "logs/python-anthropic-claude-opus-4-5-20251101-run8-20260128-233851.log",
+          "debug_log": "logs/python-anthropic-claude-opus-4-5-20251101-run8-20260128-233851.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.43,
+          "time_seconds": 1051.7,
+          "tokens": {
+            "input": 32265,
+            "output": 89233,
+            "thinking": 1514
+          },
+          "log": "logs/python-anthropic-claude-opus-4-5-20251101-run9-20260128-235623.log",
+          "debug_log": "logs/python-anthropic-claude-opus-4-5-20251101-run9-20260128-235623.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 10,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.3936,
+          "time_seconds": 1016.5,
+          "tokens": {
+            "input": 32265,
+            "output": 87681,
+            "thinking": 1610
+          },
+          "log": "logs/python-anthropic-claude-opus-4-5-20251101-run10-20260129-001319.log",
+          "debug_log": "logs/python-anthropic-claude-opus-4-5-20251101-run10-20260129-001319.debug.log"
         }
       ]
     },
@@ -662,6 +1142,491 @@
           },
           "log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run5-20260127-084317.log",
           "debug_log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run5-20260127-084317.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.167822,
+          "time_seconds": 983.84,
+          "tokens": {
+            "input": 32805,
+            "output": 53319,
+            "thinking": 38532
+          },
+          "log": "logs/typescript-google-gemini-3-pro-preview-run6-20260129-002943.log",
+          "debug_log": "logs/typescript-google-gemini-3-pro-preview-run6-20260129-002943.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.266798,
+          "time_seconds": 1027.04,
+          "tokens": {
+            "input": 32805,
+            "output": 50211,
+            "thinking": 49888
+          },
+          "log": "logs/typescript-google-gemini-3-pro-preview-run7-20260129-004650.log",
+          "debug_log": "logs/typescript-google-gemini-3-pro-preview-run7-20260129-004650.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 8,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.061922,
+          "time_seconds": 871.47,
+          "tokens": {
+            "input": 32805,
+            "output": 52673,
+            "thinking": 30353
+          },
+          "log": "logs/typescript-google-gemini-3-pro-preview-run8-20260129-010122.log",
+          "debug_log": "logs/typescript-google-gemini-3-pro-preview-run8-20260129-010122.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.288542,
+          "time_seconds": 1043.43,
+          "tokens": {
+            "input": 32805,
+            "output": 50093,
+            "thinking": 51818
+          },
+          "log": "logs/typescript-google-gemini-3-pro-preview-run9-20260129-011845.log",
+          "debug_log": "logs/typescript-google-gemini-3-pro-preview-run9-20260129-011845.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 10,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.21377,
+          "time_seconds": 969.89,
+          "tokens": {
+            "input": 32805,
+            "output": 51833,
+            "thinking": 43847
+          },
+          "log": "logs/typescript-google-gemini-3-pro-preview-run10-20260129-013455.log",
+          "debug_log": "logs/typescript-google-gemini-3-pro-preview-run10-20260129-013455.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.133366,
+          "time_seconds": 238.95,
+          "tokens": {
+            "input": 32805,
+            "output": 32911,
+            "thinking": 6077
+          },
+          "log": "logs/typescript-google-gemini-3-flash-preview-run6-20260129-013854.log",
+          "debug_log": "logs/typescript-google-gemini-3-flash-preview-run6-20260129-013854.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.14306,
+          "time_seconds": 253.22,
+          "tokens": {
+            "input": 32805,
+            "output": 35881,
+            "thinking": 6338
+          },
+          "log": "logs/typescript-google-gemini-3-flash-preview-run7-20260129-014307.log",
+          "debug_log": "logs/typescript-google-gemini-3-flash-preview-run7-20260129-014307.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 8,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.136757,
+          "time_seconds": 245.75,
+          "tokens": {
+            "input": 32805,
+            "output": 33624,
+            "thinking": 6494
+          },
+          "log": "logs/typescript-google-gemini-3-flash-preview-run8-20260129-014713.log",
+          "debug_log": "logs/typescript-google-gemini-3-flash-preview-run8-20260129-014713.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.138605,
+          "time_seconds": 247.31,
+          "tokens": {
+            "input": 32805,
+            "output": 34384,
+            "thinking": 6350
+          },
+          "log": "logs/typescript-google-gemini-3-flash-preview-run9-20260129-015120.log",
+          "debug_log": "logs/typescript-google-gemini-3-flash-preview-run9-20260129-015120.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 10,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.138053,
+          "time_seconds": 249.4,
+          "tokens": {
+            "input": 32805,
+            "output": 34009,
+            "thinking": 6541
+          },
+          "log": "logs/typescript-google-gemini-3-flash-preview-run10-20260129-015530.log",
+          "debug_log": "logs/typescript-google-gemini-3-flash-preview-run10-20260129-015530.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 6,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.3933,
+          "time_seconds": 986.05,
+          "tokens": {
+            "input": 33645,
+            "output": 87806,
+            "thinking": 1197
+          },
+          "log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run6-20260129-021156.log",
+          "debug_log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run6-20260129-021156.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 7,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.5543,
+          "time_seconds": 1058.81,
+          "tokens": {
+            "input": 33645,
+            "output": 94121,
+            "thinking": 1322
+          },
+          "log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run7-20260129-022935.log",
+          "debug_log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run7-20260129-022935.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 8,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.415875,
+          "time_seconds": 987.55,
+          "tokens": {
+            "input": 33645,
+            "output": 88438,
+            "thinking": 1468
+          },
+          "log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run8-20260129-024602.log",
+          "debug_log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run8-20260129-024602.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 9,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.4353,
+          "time_seconds": 1010.52,
+          "tokens": {
+            "input": 33645,
+            "output": 89441,
+            "thinking": 1242
+          },
+          "log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run9-20260129-030253.log",
+          "debug_log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run9-20260129-030253.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 10,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.37565,
+          "time_seconds": 971.27,
+          "tokens": {
+            "input": 33645,
+            "output": 86918,
+            "thinking": 1379
+          },
+          "log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run10-20260129-031904.log",
+          "debug_log": "logs/typescript-anthropic-claude-opus-4-5-20251101-run10-20260129-031904.debug.log"
+        }
+      ]
+    },
+    {
+      "target_language": "cpp",
+      "results": [
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 1,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.152709,
+          "time_seconds": 275.67,
+          "tokens": {
+            "input": 32190,
+            "output": 38658,
+            "thinking": 6880
+          },
+          "log": "logs/cpp-google-gemini-3-flash-preview-run1-20260129-072754.log",
+          "debug_log": "logs/cpp-google-gemini-3-flash-preview-run1-20260129-072754.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 2,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.156093,
+          "time_seconds": 275.51,
+          "tokens": {
+            "input": 32190,
+            "output": 39301,
+            "thinking": 7365
+          },
+          "log": "logs/cpp-google-gemini-3-flash-preview-run2-20260129-073230.log",
+          "debug_log": "logs/cpp-google-gemini-3-flash-preview-run2-20260129-073230.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 3,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.147315,
+          "time_seconds": 264.47,
+          "tokens": {
+            "input": 32190,
+            "output": 37246,
+            "thinking": 6494
+          },
+          "log": "logs/cpp-google-gemini-3-flash-preview-run3-20260129-073654.log",
+          "debug_log": "logs/cpp-google-gemini-3-flash-preview-run3-20260129-073654.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 4,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.152154,
+          "time_seconds": 274.02,
+          "tokens": {
+            "input": 32190,
+            "output": 38539,
+            "thinking": 6814
+          },
+          "log": "logs/cpp-google-gemini-3-flash-preview-run4-20260129-074128.log",
+          "debug_log": "logs/cpp-google-gemini-3-flash-preview-run4-20260129-074128.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-flash-preview",
+          "run": 5,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 0.154335,
+          "time_seconds": 274.58,
+          "tokens": {
+            "input": 32190,
+            "output": 38744,
+            "thinking": 7336
+          },
+          "log": "logs/cpp-google-gemini-3-flash-preview-run5-20260129-074603.log",
+          "debug_log": "logs/cpp-google-gemini-3-flash-preview-run5-20260129-074603.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 1,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.45788,
+          "time_seconds": 1154.82,
+          "tokens": {
+            "input": 32190,
+            "output": 67784,
+            "thinking": 48341
+          },
+          "log": "logs/cpp-google-gemini-3-pro-preview-run1-20260129-080518.log",
+          "debug_log": "logs/cpp-google-gemini-3-pro-preview-run1-20260129-080518.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 2,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.13874,
+          "time_seconds": 901.46,
+          "tokens": {
+            "input": 32190,
+            "output": 71360,
+            "thinking": 18170
+          },
+          "log": "logs/cpp-google-gemini-3-pro-preview-run2-20260129-082019.log",
+          "debug_log": "logs/cpp-google-gemini-3-pro-preview-run2-20260129-082019.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 3,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.474104,
+          "time_seconds": 1178.61,
+          "tokens": {
+            "input": 32190,
+            "output": 67570,
+            "thinking": 49907
+          },
+          "log": "logs/cpp-google-gemini-3-pro-preview-run3-20260129-083958.log",
+          "debug_log": "logs/cpp-google-gemini-3-pro-preview-run3-20260129-083958.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 4,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.149948,
+          "time_seconds": 936.33,
+          "tokens": {
+            "input": 32190,
+            "output": 66428,
+            "thinking": 24036
+          },
+          "log": "logs/cpp-google-gemini-3-pro-preview-run4-20260129-085534.log",
+          "debug_log": "logs/cpp-google-gemini-3-pro-preview-run4-20260129-085534.debug.log"
+        },
+        {
+          "provider": "google",
+          "model": "gemini-3-pro-preview",
+          "run": 5,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 1.3041,
+          "time_seconds": 998.12,
+          "tokens": {
+            "input": 32190,
+            "output": 66163,
+            "thinking": 37147
+          },
+          "log": "logs/cpp-google-gemini-3-pro-preview-run5-20260129-091212.log",
+          "debug_log": "logs/cpp-google-gemini-3-pro-preview-run5-20260129-091212.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 1,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.57725,
+          "time_seconds": 1061.24,
+          "tokens": {
+            "input": 33020,
+            "output": 94608,
+            "thinking": 1878
+          },
+          "log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run1-20260129-092953.log",
+          "debug_log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run1-20260129-092953.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 2,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.506825,
+          "time_seconds": 1044.7,
+          "tokens": {
+            "input": 33020,
+            "output": 92173,
+            "thinking": 1496
+          },
+          "log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run2-20260129-094718.log",
+          "debug_log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run2-20260129-094718.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 3,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.55205,
+          "time_seconds": 1044.37,
+          "tokens": {
+            "input": 33020,
+            "output": 94064,
+            "thinking": 1414
+          },
+          "log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run3-20260129-100443.log",
+          "debug_log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run3-20260129-100443.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 4,
+          "attempts": 4,
+          "status": "FAIL",
+          "cost": 1.96173,
+          "time_seconds": 824.09,
+          "tokens": {
+            "input": 26416,
+            "output": 71677,
+            "thinking": 1509
+          },
+          "log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run4-20260129-101827.log",
+          "debug_log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run4-20260129-101827.debug.log"
+        },
+        {
+          "provider": "anthropic",
+          "model": "claude-opus-4-5-20251101",
+          "run": 5,
+          "attempts": 5,
+          "status": "FAIL",
+          "cost": 2.519125,
+          "time_seconds": 1050.17,
+          "tokens": {
+            "input": 33020,
+            "output": 92799,
+            "thinking": 1362
+          },
+          "log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run5-20260129-132249.log",
+          "debug_log": "logs/cpp-anthropic-claude-opus-4-5-20251101-run5-20260129-132249.debug.log"
         }
       ]
     }

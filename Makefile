@@ -1,3 +1,5 @@
+VERSION := 0.8.0
+
 BOOTSTRAP_FLAGS := --context-files ./.enc.env.example
 
 BOOTSTRAP_DEPS := ./.enc.env.example ./res/pricing.json ./res/languages.json
@@ -43,6 +45,22 @@ uninstall:
 #############
 ### BUILD ###
 #############
+
+release: build/release/enc-linux-x64-$(VERSION).tgz
+.PHONY: release
+
+build/release/enc-linux-x64-$(VERSION).tgz: build-release build
+	mkdir -p build/release/enc-$(VERSION)/
+	cp ./README.md ./build/release/enc-$(VERSION)/
+	cp ./.enc.env.example ./build/release/enc-$(VERSION)/
+	cp ./target/release/enc ./build/release/enc-$(VERSION)/
+	cp ./src/enc.py ./build/release/enc-$(VERSION)/
+	cp ./src/enc.ts ./build/release/enc-$(VERSION)/
+	cp ./build/enc-cpp ./build/release/enc-$(VERSION)/
+	cp ./package-lock.json ./build/release/enc-$(VERSION)/
+	cp ./requirements.txt ./build/release/enc-$(VERSION)/
+	cp -r ./res/ ./build/release/enc-$(VERSION)/
+	tar -C ./build/release/ -cvzf "$@" ./enc-$(VERSION)/
 
 build: build-rust build-cpp build-python build-typescript
 .PHONY: build

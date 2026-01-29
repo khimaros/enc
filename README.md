@@ -53,11 +53,13 @@ fn main() {
 prebuilt rust [releases](https://github.com/khimaros/enc/releases) are available for linux-x64
 
 ```console
-$ wget -O enc https://github.com/khimaros/enc/releases/download/v0.6.0/enc-linux-x64
+$ wget https://github.com/khimaros/enc/releases/download/v0.8.0/enc-linux-x64-0.8.0.tgz
 
-$ chmod +x enc
+$ tar -xvzf enc-linux-x64-0.8.0.tgz
 
-$ wget -O .enc.env https://github.com/khimaros/enc/releases/download/v0.6.0/x.enc.env.example
+$ cd enc-linux-x64-0.8.0
+
+$ cp .enc.env.example .enc.env
 
 $ editor .enc.env   # add your API keys
 
